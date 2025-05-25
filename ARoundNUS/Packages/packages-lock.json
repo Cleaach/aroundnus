@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.immersal.core": {
-      "version": "file:C:/Users/Clement Chendra/Downloads/IMDK/imdk-unity-main",
+      "version": "file:C:/Users/dylan/Documents/ARoundNUS/aroundnus/imdk-unity",
       "depth": 0,
       "source": "local",
       "dependencies": {
