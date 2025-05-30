@@ -19,12 +19,14 @@ ARoundNUS is an innovative augmented reality (AR) application designed to enhanc
   - *Justification*: Simplifies development process and provides essential tools and services
 
 ### AR Technology
-- **[Your AR Framework]**: 
-  - *Justification*: [Add your justification]
+- **Unity**: 
+  - *Justification*: _To be added_
+- **Immersal SDK**
+  - *Justification*: _To be added_
 
 ### Backend
-- **[Your Backend Choice]**: Server framework
-  - *Justification*: [Add your justification]
+- **Node, Express**: Server framework
+  - *Justification*: _To be added_
 
 ### Database
 - **Firebase**
