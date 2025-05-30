@@ -10,16 +10,6 @@ ARoundNUS is an innovative augmented reality (AR) application designed to enhanc
 - **Information Hub**: Detailed information about buildings, facilities, and services
 - **Social Interactivity and Sharability**: Ability to share routes and location info with other app users
 
-## System Architecture
-- **Frontend**: React Native with Expo framework
-- **Backend**: Node.js, Express.js
-- **AR Integration**: Unity 3D with Immersal SDK
-- **Data Storage and Authentication**: Firebase
-
-## Development Plan
-
-_To be updated_
-
 ## Technologies Used
 
 ### Frontend
@@ -37,24 +27,34 @@ _To be updated_
   - *Justification*: [Add your justification]
 
 ### Database
-- **[Your Database Choice]**: Data storage solution
-  - *Justification*: [Add your justification]
+- **Firebase**
+
+## Development Plan
+
+_To be updated_
 
 ## User Guide
 
 ### Prerequisites
-- Expo
+- ...
+- _To be updated_
+
+### Procedure
 
 1. Install dependencies
    ```bash
+   cd frontend/
    npm install
    ```
 
 2. Start the app
    ```bash
-   npx expo start
+   npx run ios
+   ```
+   or
+   ```bash
+   npx run android
    ```
 
-## Authors
-Clement Aditya Chendra 
-Dylan Ananda Astono
+## Acknowledgements
+Made by Clement Aditya Chendra and Dylan Ananda Astono as part of the 2025 Orbital program by the School of Computing at the National University of Singapore.
