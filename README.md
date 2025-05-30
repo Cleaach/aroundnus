@@ -20,16 +20,17 @@ ARoundNUS is an innovative augmented reality (AR) application designed to enhanc
 
 ### AR Technology
 - **Unity**: 
-  - *Justification*: _To be added_
+  - *Justification*: Industry standard with a wide range of libraries that integrate seamlessly with Android's ARCore and iOS' ARKit SDKs and the ability to embed Unity projects within React Native applications
 - **Immersal SDK**
-  - *Justification*: _To be added_
+  - *Justification*: Granular control over mapping process while still being able to simply use any LiDAR-enabled smartphone, good localization speeds and accuracies, and the ability to stitch maps together thereby simplifying scalability of future extensions greatly
 
 ### Backend
 - **Node, Express**: Server framework
-  - *Justification*: _To be added_
+  - *Justification*: Industry standard, simple to use
 
 ### Database
 - **Firebase**
+  - *Justification*: Secure remote storage and user authentication in one simple-to-use, intuitive UI-based online console
 
 ## Development Plan
 
