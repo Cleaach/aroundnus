@@ -1,5 +1,5 @@
-import * as Location from 'expo-location';
-import React, { useEffect, useState } from 'react';
+import * as Location from "expo-location";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   Keyboard,
@@ -8,33 +8,35 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
-} from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+  View,
+} from "react-native";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 const dummyDestinations = [
-  'UTown',
-  'COM1',
-  'COM2',
-  'YIH',
-  'Central Library',
-  'PGP',
-  'NUH',
-  'Science Canteen',
-  'Business School',
+  "UTown",
+  "COM1",
+  "COM2",
+  "YIH",
+  "Central Library",
+  "PGP",
+  "NUH",
+  "Science Canteen",
+  "Business School",
 ];
 
 export default function HomeScreen() {
   const [location, setLocation] = useState(null);
   const [region, setRegion] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [selectedDestination, setSelectedDestination] = useState<string | null>(null);
+  const [selectedDestination, setSelectedDestination] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') return;
+      if (status !== "granted") return;
 
       let loc = await Location.getCurrentPositionAsync({});
       setLocation(loc.coords);
@@ -69,7 +71,7 @@ export default function HomeScreen() {
     Keyboard.dismiss();
   };
 
-  const isWeb = Platform.OS === 'web';
+  const isWeb = Platform.OS === "web";
 
   return (
     <View style={styles.container}>
@@ -98,15 +100,16 @@ export default function HomeScreen() {
 
       <View style={styles.searchContainer}>
         <TextInput
-          style={[styles.input, { backgroundColor: '#f0f0f0', color: '#888' }]}
+          style={styles.input}
           placeholder="🔍  Your Location"
+          placeholderTextColor="#666666"
           editable={false}
-          value="🔍  Your Location"
         />
 
         <TextInput
           style={styles.input}
           placeholder="🔍  Destination"
+          placeholderTextColor="#666666"
           value={searchQuery}
           onChangeText={handleSearchChange}
         />
@@ -145,7 +148,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   searchContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 50,
     left: 10,
     right: 10,
@@ -153,50 +156,50 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 12,
     borderRadius: 12,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
   suggestionContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
     maxHeight: 150,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   suggestionItem: {
     padding: 12,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
     borderBottomWidth: 1,
   },
   noSuggestions: {
     padding: 12,
-    textAlign: 'center',
-    color: '#999',
+    textAlign: "center",
+    color: "#999",
   },
   navigateButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     paddingVertical: 12,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 5,
   },
   navigateButtonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
     fontSize: 16,
   },
   webPlaceholder: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#e0e0e0',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#e0e0e0",
   },
   webText: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
 });
