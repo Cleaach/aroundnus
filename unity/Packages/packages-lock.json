@@ -1,9 +1,9 @@
 {
   "dependencies": {
     "com.immersal.core": {
-      "version": "file:C:/Users/dylan/Documents/ARoundNUS/aroundnus/imdk-unity",
+      "version": "https://github.com/immersal/imdk-unity.git",
       "depth": 0,
-      "source": "local",
+      "source": "git",
       "dependencies": {
         "com.unity.feature.development": "1.0.1",
         "com.unity.xr.arcore": "5.1.0",
@@ -15,7 +15,8 @@
         "com.unity.2d.sprite": "1.0.0",
         "com.unity.render-pipelines.universal": "14.0.9",
         "com.unity.ai.navigation": "1.1.5"
-      }
+      },
+      "hash": "629a5859fabe17461a4b232415a0c125363e38dd"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",

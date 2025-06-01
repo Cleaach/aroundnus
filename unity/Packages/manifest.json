@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.immersal.core": "file:C:/Users/dylan/Documents/ARoundNUS/aroundnus/imdk-unity",
+    "com.immersal.core": "https://github.com/immersal/imdk-unity.git",
     "com.unity.ai.navigation": "2.0.7",
     "com.unity.collab-proxy": "2.8.2",
     "com.unity.ide.rider": "3.0.36",
