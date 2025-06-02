@@ -2,8 +2,10 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithCredential,
   signOut,
   User,
+  GoogleAuthProvider,
 } from "firebase/auth";
 import { useEffect, useState } from "react";
 import {
@@ -18,6 +20,10 @@ import {
   ActivityIndicator,
   Image,
 } from "react-native";
+// import {
+//   GoogleSignin,
+//   statusCodes,
+// } from "@react-native-google-signin/google-signin";
 import { auth } from "../../firebase";
 
 export default function ExploreScreen() {
@@ -34,6 +40,14 @@ export default function ExploreScreen() {
 
     return unsubscribe;
   }, []);
+
+  // useEffect(() => {
+  //   GoogleSignin.configure({
+  //     webClientId:
+  //       "727796046319-o9jeehct94utt3oetnul60md6465cfjl.apps.googleusercontent.com",
+  //     offlineAccess: true,
+  //   });
+  // }, []);
 
   const handleEmailSubmit = async () => {
     if (!email.trim() || !password.trim()) {
@@ -58,9 +72,38 @@ export default function ExploreScreen() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    Alert.alert("Google Sign In", "Google Sign In not implemented yet");
+  const handleGoogleSignIn = () => {
+    Alert.alert("Google Sign In", "Google Sign In is disabled in Expo Go");
   };
+  // const handleGoogleSignIn = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     await GoogleSignin.hasPlayServices({
+  //       showPlayServicesUpdateDialog: true,
+  //     });
+  //     const response = await GoogleSignin.signIn();
+  //     const idToken = response.data?.idToken;
+  //     if (!idToken) {
+  //       throw new Error("No ID token received from Google Sign-In");
+  //     }
+  //     const googleCredential = GoogleAuthProvider.credential(idToken);
+  //     await signInWithCredential(auth, googleCredential);
+  //     Alert.alert("Success", "Signed in with Google!");
+  //   } catch (error: any) {
+  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  //       Alert.alert("Cancelled", "Google Sign-In was cancelled");
+  //     } else if (error.code === statusCodes.IN_PROGRESS) {
+  //       Alert.alert("In Progress", "Google Sign-In is already in progress");
+  //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+  //       Alert.alert("Error", "Play services not available");
+  //     } else {
+  //       Alert.alert("Error", error.message || "Google Sign-In failed");
+  //       console.error(error);
+  //     }
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleAppleSignIn = () => {
     Alert.alert("Apple Sign In", "Apple Sign In not implemented yet");
@@ -68,10 +111,17 @@ export default function ExploreScreen() {
 
   const handleSignOut = async () => {
     try {
+      // await GoogleSignin.revokeAccess();
+      // await GoogleSignin.signOut();
+
       await signOut(auth);
+
       Alert.alert("Success", "Signed out successfully!");
     } catch (error: any) {
-      Alert.alert("Error", error.message || "An error occurred");
+      Alert.alert(
+        "Error",
+        error.message || "An error occurred during sign out"
+      );
       console.error(error);
     }
   };
