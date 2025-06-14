@@ -3,6 +3,7 @@ import { getAuth, initializeAuth, getReactNativePersistence } from "firebase/aut
 import { getFirestore } from "firebase/firestore";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD7jNgQUt3Eilw7By3fhKJxWoYnOkPi5j8",
@@ -16,18 +17,17 @@ const firebaseConfig = {
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
+const isExpoGo = Constants.executionEnvironment === "storeClient";
+
 let auth;
-if (Platform.OS === "web") {
-  // On web, use standard getAuth
+if (Platform.OS === "web" || isExpoGo) {
   auth = getAuth(app);
 } else {
-  // On native, use initializeAuth with persistence
   try {
     auth = initializeAuth(app, {
       persistence: getReactNativePersistence(AsyncStorage),
     });
   } catch (e) {
-    // Fallback if already initialized
     auth = getAuth(app);
   }
 }
