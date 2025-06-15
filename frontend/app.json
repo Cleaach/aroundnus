@@ -13,8 +13,10 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Allow $(ARoundNUS) to access your camera to set your profile picture.",
         "NSPhotoLibraryUsageDescription": "Allow $(ARoundNUS) to access your photo library to set your profile picture.",
-        "NSPhotoLibraryAddUsageDescription": "Allow $(ARoundNUS) to save photos."
-      }
+        "NSPhotoLibraryAddUsageDescription": "Allow $(ARoundNUS) to save photos.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.dylandaa.ARoundNUS"
     },
     "android": {
       "adaptiveIcon": {
@@ -47,12 +49,20 @@
       [
         "@react-native-google-signin/google-signin",
         {
-          "reservedClientId": "com.googleusercontent.apps.YOUR_REVERSED_CLIENT_ID"
+          "reservedClientId": "com.googleusercontent.apps.727796046319-t0am3j77cn3fqdc6nfj2tm2dd2li4q4s",
+          "iosUrlScheme": "com.googleusercontent.apps.727796046319-t0am3j77cn3fqdc6nfj2tm2dd2li4q4s"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b90bf1d5-2b66-49f4-86ae-945a06aabc21"
+      }
+    },
+    "owner": "dylandaa"
   }
 }
