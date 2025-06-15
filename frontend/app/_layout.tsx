@@ -9,10 +9,10 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
-import { onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import type { User } from "firebase/auth";
-import { useRouter, usePathname } from "expo-router";
-import { auth } from "../firebase";
+import { useRouter } from "expo-router";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -31,13 +31,13 @@ export default function RootLayout() {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     if (error) throw error;
   }, [error]);
 
   useEffect(() => {
+    const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setIsAuthLoading(false);
@@ -48,14 +48,14 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontLoaded && !isAuthLoading) {
-      if (!user && pathname !== "/sign-in") {
+      if (!user) {
         router.replace("/sign-in");
-      } else if (user && pathname !== "/(tabs)") {
+      } else {
         router.replace("/(tabs)");
       }
       SplashScreen.hideAsync();
     }
-  }, [user, fontLoaded, isAuthLoading, pathname]);
+  }, [user, fontLoaded, isAuthLoading]);
 
   if (!fontLoaded || isAuthLoading) {
     return null;
