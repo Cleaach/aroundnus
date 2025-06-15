@@ -43,12 +43,6 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],
-      [
-        "@react-native-google-signin/google-signin",
-        {
-          "reservedClientId": "com.googleusercontent.apps.YOUR_REVERSED_CLIENT_ID"
-        }
       ]
     ],
     "experiments": {
