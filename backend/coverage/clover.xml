@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1750680417202" clover="3.2.0">
-  <project timestamp="1750680417202" name="All files">
-    <metrics statements="34" coveredstatements="23" conditionals="12" coveredconditionals="8" methods="4" coveredmethods="3" elements="50" coveredelements="34" complexity="0" loc="34" ncloc="34" packages="1" files="1" classes="1"/>
+<coverage generated="1750687267031" clover="3.2.0">
+  <project timestamp="1750687267031" name="All files">
+    <metrics statements="34" coveredstatements="34" conditionals="12" coveredconditionals="11" methods="4" coveredmethods="4" elements="50" coveredelements="49" complexity="0" loc="34" ncloc="34" packages="1" files="1" classes="1"/>
     <file name="authController.js" path="C:\Users\dylan\Documents\ARoundNUS\aroundnus\backend\controllers\authController.js">
-      <metrics statements="34" coveredstatements="23" conditionals="12" coveredconditionals="8" methods="4" coveredmethods="3"/>
+      <metrics statements="34" coveredstatements="34" conditionals="12" coveredconditionals="11" methods="4" coveredmethods="4"/>
       <line num="1" count="1" type="stmt"/>
       <line num="3" count="1" type="stmt"/>
       <line num="4" count="3" type="stmt"/>
@@ -26,17 +26,17 @@
       <line num="34" count="1" type="stmt"/>
       <line num="36" count="1" type="stmt"/>
       <line num="40" count="1" type="stmt"/>
-      <line num="41" count="0" type="stmt"/>
-      <line num="42" count="0" type="stmt"/>
-      <line num="43" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="45" count="0" type="stmt"/>
-      <line num="46" count="0" type="stmt"/>
-      <line num="48" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="49" count="0" type="stmt"/>
-      <line num="60" count="0" type="stmt"/>
-      <line num="61" count="0" type="stmt"/>
-      <line num="63" count="0" type="stmt"/>
-      <line num="66" count="0" type="stmt"/>
+      <line num="41" count="3" type="stmt"/>
+      <line num="42" count="3" type="stmt"/>
+      <line num="43" count="3" type="cond" truecount="1" falsecount="1"/>
+      <line num="45" count="3" type="stmt"/>
+      <line num="46" count="3" type="stmt"/>
+      <line num="48" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="49" count="1" type="stmt"/>
+      <line num="60" count="1" type="stmt"/>
+      <line num="61" count="1" type="stmt"/>
+      <line num="63" count="1" type="stmt"/>
+      <line num="66" count="1" type="stmt"/>
       <line num="70" count="1" type="stmt"/>
     </file>
   </project>

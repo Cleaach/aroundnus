@@ -132,11 +132,80 @@ describe('verifyToken', () => {
 describe('initUserDoc', () => {
     it('should return 201 if user document is created', async () => {
         const { admin } = require('../config/firebase');
-        admin.firestore().collection('users').doc('123').get.mockResolvedValue({ exists: false });
-        admin.firestore().collection('users').doc('123').set.mockResolvedValue();
+        const userTemplate = {
+            bookmarkedLocations: [],
+            email: 'test@example.com',
+            friendRequests: {
+                received: [],
+                sent: [],
+            },
+            friends: [],
+            sharedLocation: [],
+            displayName: 'Test User',
+        };
 
-        const req = { user: { uid: '123', email: 'test@example.com' } };
+        const docMock = {
+            get: jest.fn().mockResolvedValue({ exists: false }),
+            set: jest.fn().mockResolvedValue(),
+        }
+
+        const collectionMock = {
+            doc: jest.fn().mockReturnValue(docMock),
+        }
+
+        admin.firestore().collection = jest.fn().mockReturnValue(collectionMock);
+
+        const req = { user: { uid: '123', email: 'test@example.com' }, body: { displayName: 'Test User' } };
         const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
+        await initUserDoc(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.json).toHaveBeenCalledWith({
+            message: "User document created", user: userTemplate
+        });
+        expect(docMock.set).toHaveBeenCalledWith(userTemplate);
+    });
+
+    it('should return 200 if user document already exists', async () => {
+        const { admin } = require('../config/firebase');
+        const docMock = {
+            get: jest.fn().mockResolvedValue({ exists: true }),
+            set: jest.fn().mockResolvedValue(),
+        }
+        const collectionMock = {
+            doc: jest.fn().mockReturnValue(docMock),
+        }
+
+        admin.firestore().collection = jest.fn().mockReturnValue(collectionMock);
+
+        const req = { user: { uid: '123', email: 'test@example.com' }, body: { displayName: 'Test User' } };
+        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+        await initUserDoc(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(docMock.set).not.toHaveBeenCalled();
+        expect(res.json).toHaveBeenCalledWith({ message: "User document already exists" });
+    })
+
+    it('should return 500 if an error occurs', async () => {
+        const { admin } = require('../config/firebase');
+        const docMock = {
+            get: jest.fn().mockRejectedValue(new Error('Error')),
+            set: jest.fn().mockResolvedValue(),
+        }
+        const collectionMock = {
+            doc: jest.fn().mockReturnValue(docMock),
+        }
+        admin.firestore().collection = jest.fn().mockReturnValue(collectionMock);
+
+        const req = { user: { uid: '123', email: 'test@example.com' }, body: { displayName: 'Test User' } };
+        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+        await initUserDoc(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ error: 'Error' });
     });
 });
