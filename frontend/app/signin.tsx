@@ -48,10 +48,7 @@ export default function SignInScreen() {
             displayName: user.displayName,
           }),
         });
-        console.log("reached here");
-        console.log(response);
         const data = await response.json();
-        console.log(data);
       }
     } catch (error: any) {
       Alert.alert("Error", error.message || "An error occurred");

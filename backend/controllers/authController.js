@@ -7,7 +7,12 @@ const registerUser = async (req, res) => {
     }
     try {
         const userRecord = await admin.auth().createUser({ email, password, displayName });
-        res.json({ uid: userRecord.uid, email: userRecord.email, displayName: userRecord.displayName });
+        res.status(201).json({
+            message: 'User created successfully',
+            uid: userRecord.uid,
+            email: userRecord.email,
+            displayName: userRecord.displayName
+        });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
@@ -34,8 +39,6 @@ const verifyToken = async (req, res, next) => {
 
 const initUserDoc = async (req, res) => {
     try {
-        console.log(req.user);
-        console.log("called");
         const { uid, email } = req.user;
         const displayName = req.body.displayName || "";
 
