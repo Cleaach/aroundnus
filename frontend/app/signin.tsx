@@ -34,6 +34,25 @@ export default function SignInScreen() {
       }
       setEmail("");
       setPassword("");
+      const user = auth.currentUser;
+      if (user) {
+        const token = await user.getIdToken();
+        const response = await fetch('http://192.168.1.4:3000/api/auth/init-user-doc', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            displayName: user.displayName,
+          }),
+        });
+        console.log("reached here");
+        console.log(response);
+        const data = await response.json();
+        console.log(data);
+      }
     } catch (error: any) {
       Alert.alert("Error", error.message || "An error occurred");
       console.error(error);

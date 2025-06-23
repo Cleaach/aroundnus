@@ -37,8 +37,6 @@ export default function ProfileScreen() {
   };
 
   const openCamera = async () => {
-
-
     const options = {
       mediaType: "photo" as const,
       saveToPhotos: true,
