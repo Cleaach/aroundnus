@@ -11,14 +11,30 @@ getSavedLocations = async (req, res) => {
 
 addSavedLocation = async (req, res) => {
     const { uid } = req.user;
+    const { location } = req.body;
 
-    console.log(req)
-    res.status(200).json({ message: "addSavedLocation" });
+    const userDoc = await admin.firestore().collection('users').doc(uid).get();
+    const userData = userDoc.data();
+    const savedLocations = userData.savedLocations || [];
+
+    savedLocations.push(location);
+
+    await admin.firestore().collection('users').doc(uid).update({ savedLocations });
+    res.status(200).json({ message: "Location added to saved locations" });
 }
 
 deleteSavedLocation = async (req, res) => {
-    console.log(req)
-    res.status(200).json({ message: "deleteSavedLocation" });
+    const { uid } = req.user;
+    const { location } = req.body;
+
+    const userDoc = await admin.firestore().collection('users').doc(uid).get();
+    const userData = userDoc.data();
+    const savedLocations = userData.savedLocations || [];
+
+    const newSavedLocations = savedLocations.filter(loc => loc.id !== location.id);
+
+    await admin.firestore().collection('users').doc(uid).update({ savedLocations: newSavedLocations });
+    res.status(200).json({ message: "Location deleted from saved locations" });
 }
 
 
