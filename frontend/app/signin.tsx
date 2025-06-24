@@ -37,7 +37,8 @@ export default function SignInScreen() {
       const user = auth.currentUser;
       if (user) {
         const token = await user.getIdToken();
-        const response = await fetch('http://192.168.1.4:3000/api/auth/init-user-doc', {
+        console.log(token);
+        await fetch('http://192.168.1.4:3000/api/auth/init-user-doc', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -48,7 +49,6 @@ export default function SignInScreen() {
             displayName: user.displayName,
           }),
         });
-        const data = await response.json();
       }
     } catch (error: any) {
       Alert.alert("Error", error.message || "An error occurred");

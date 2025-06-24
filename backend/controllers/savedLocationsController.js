@@ -37,7 +37,6 @@ deleteSavedLocation = async (req, res) => {
     res.status(200).json({ message: "Location deleted from saved locations" });
 }
 
-
 // exports the functions so that they can be used
 
 module.exports = {
