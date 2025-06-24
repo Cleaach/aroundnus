@@ -6,19 +6,19 @@ getSavedLocations = async (req, res) => {
     const userDoc = await admin.firestore().collection('users').doc(uid).get();
     const userData = userDoc.data();
     const savedLocations = userData.savedLocations || [];
-    res.json(savedLocations);
+    res.status(200).json(savedLocations);
 }
 
 addSavedLocation = async (req, res) => {
     const { uid } = req.user;
 
     console.log(req)
-    res.json({ message: "addSavedLocation" });
+    res.status(200).json({ message: "addSavedLocation" });
 }
 
 deleteSavedLocation = async (req, res) => {
     console.log(req)
-    res.json({ message: "deleteSavedLocation" });
+    res.status(200).json({ message: "deleteSavedLocation" });
 }
 
 
