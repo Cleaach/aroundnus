@@ -1,11 +1,11 @@
 const { admin } = require('../config/firebase');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
-const upload = multer({ storage: multer.memoryStorage() }); 
+const upload = multer({ storage: multer.memoryStorage() });
 
 
 const getProfileData = async (req, res) => {
-  const { uid } = req.user; 
+  const { uid } = req.user;
   try {
     const userDoc = await admin.firestore().collection('users').doc(uid).get();
     if (!userDoc.exists) {
@@ -42,7 +42,7 @@ const updateProfilePicture = async (req, res) => {
         const path = url.pathname.split('/o/')[1];
         if (path) oldProfilePicturePath = decodeURIComponent(path.split('?')[0]);
       }
-      await bucket.file(oldProfilePicturePath).delete().catch(() => {});
+      await bucket.file(oldProfilePicturePath).delete().catch(() => { });
     }
 
     // Upload new profile picture
