@@ -1,6 +1,26 @@
 const express = require('express');
+const savedLocationsRoutes = require('./routes/savedLocationsRoutes');
+const authRoutes = require('./routes/authRoutes');
+const profilePictureRoutes = require('./routes/profileRoutes');
+
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 app.use(express.json());
+
+// routes
+app.use('/api/savedLocations', savedLocationsRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/profilePicture', profilePictureRoutes);
+
+// Catch-all 404 handler for unknown routes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not Found', path: req.originalUrl });
+});
+
+module.exports = app;
+
+
 
 // // --- Simple Graph Model for Pathfinding ---
 // // Each node has: id, name, floor, neighbors: [{ id, weight }]
@@ -71,45 +91,3 @@ app.use(express.json());
 //   }
 //   res.json({ path, message: `Path from ${start} to ${end}` });
 // });
-
-
-// --- Firebase Admin SDK Setup ---
-const admin = require('firebase-admin');
-try {
-  admin.app(); // Prevent re-initialization
-} catch (e) {
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-    // For production, use a service account key JSON file:
-    // credential: admin.credential.cert(require('./serviceAccountKey.json')),
-  });
-}
-
-// --- API: Register User ---
-// POST /api/register { email, password, displayName }
-app.post('/api/register', async (req, res) => {
-  const { email, password, displayName } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password required' });
-  }
-  try {
-    const userRecord = await admin.auth().createUser({ email, password, displayName });
-    res.json({ uid: userRecord.uid, email: userRecord.email, displayName: userRecord.displayName });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// --- API: Login User ---
-// POST /api/login { email, password }
-// Note: Firebase Admin SDK cannot verify passwords. Login should be handled on the client using Firebase Auth SDK.
-// This endpoint is a placeholder to explain best practice.
-app.post('/api/login', (req, res) => {
-  res.status(400).json({ error: 'Login should be handled on the client using Firebase Auth SDK. Send the ID token to the backend for verification.' });
-});
-
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Backend server running on port ${PORT}`);
-});
