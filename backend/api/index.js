@@ -1,8 +1,7 @@
 const express = require('express');
-const savedLocationsRoutes = require('../routes/savedLocationsRoutes');
-const authRoutes = require('../routes/authRoutes');
-const profilePictureRoutes = require('../routes/profileRoutes');
-const serverlessExpress = require('@vendia/serverless-express');
+const savedLocationsRoutes = require('./routes/savedLocationsRoutes');
+const authRoutes = require('./routes/authRoutes');
+const profilePictureRoutes = require('./routes/profileRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,7 +18,7 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Not Found', path: req.originalUrl });
 });
 
-module.exports = serverlessExpress({ app });
+module.exports = app;
 
 
 
