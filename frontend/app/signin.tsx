@@ -38,7 +38,7 @@ export default function SignInScreen() {
       if (user) {
         const token = await user.getIdToken();
         console.log(token);
-        await fetch('http://192.168.1.4:3000/api/auth/init-user-doc', {
+        await fetch('http://aroundnus.onrender.com/api/auth/init-user-doc', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
