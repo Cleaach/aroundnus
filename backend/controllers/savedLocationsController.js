@@ -1,7 +1,7 @@
 const { admin } = require('../config/firebase');
 
 
-const getSavedLocations = async (req, res) => {
+getSavedLocations = async (req, res) => {
     const { uid } = req.user;
     const userDoc = await admin.firestore().collection('users').doc(uid).get();
     const userData = userDoc.data();
@@ -9,10 +9,10 @@ const getSavedLocations = async (req, res) => {
     res.status(200).json(savedLocations);
 }
 
-const addSavedLocation = async (req, res) => {
+addSavedLocation = async (req, res) => {
     const { uid } = req.user;
     const { location } = req.body;
-
+ 
     const userDoc = await admin.firestore().collection('users').doc(uid).get();
     const userData = userDoc.data();
     const savedLocations = userData.savedLocations || [];
@@ -23,7 +23,7 @@ const addSavedLocation = async (req, res) => {
     res.status(200).json({ message: "Location added to saved locations" });
 }
 
-const deleteSavedLocation = async (req, res) => {
+deleteSavedLocation = async (req, res) => {
     const { uid } = req.user;
     const { location } = req.body;
 
