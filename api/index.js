@@ -1,3 +1,4 @@
-module.exports = (req, res) => {
-    res.status(200).json({ message: "Hello from Vercel API!" });
-};
+const serverlessExpress = require('@vendia/serverless-express');
+const app = require('../backend/index');
+
+module.exports = serverlessExpress({ app });
