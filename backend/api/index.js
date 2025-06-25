@@ -1,7 +1,26 @@
+const express = require('express');
+const savedLocationsRoutes = require('../routes/savedLocationsRoutes');
+const authRoutes = require('../routes/authRoutes');
+const profilePictureRoutes = require('../routes/profileRoutes');
 const serverlessExpress = require('@vendia/serverless-express');
-const app = require('../index'); // Import your Express app
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+
+// routes
+app.use('/api/savedLocations', savedLocationsRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/profilePicture', profilePictureRoutes);
+
+// Catch-all 404 handler for unknown routes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not Found', path: req.originalUrl });
+});
 
 module.exports = serverlessExpress({ app });
+
 
 
 // // --- Simple Graph Model for Pathfinding ---
