@@ -12,7 +12,7 @@ getSavedLocations = async (req, res) => {
 addSavedLocation = async (req, res) => {
     const { uid } = req.user;
     const { location } = req.body;
-
+ 
     const userDoc = await admin.firestore().collection('users').doc(uid).get();
     const userData = userDoc.data();
     const savedLocations = userData.savedLocations || [];

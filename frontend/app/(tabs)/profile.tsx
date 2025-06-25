@@ -1,8 +1,4 @@
-import {
-  signOut,
-  User,
-  onAuthStateChanged,
-} from "firebase/auth";
+import { signOut, User, onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect } from "react";
 import {
   Alert,
@@ -15,10 +11,13 @@ import {
 } from "react-native";
 import { auth } from "../../firebase";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import axios from "axios";
 
 export default function ProfileScreen() {
   const [user, setUser] = useState<User | null>(null);
-  const [profileImage, setProfileImage] = useState<string | undefined>(undefined);
+  const [profileImage, setProfileImage] = useState<string | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -27,13 +26,27 @@ export default function ProfileScreen() {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/profilePicture/data")
+      .then((res) => {
+        setProfileImage(res.data.profilePicture);
+      })
+      .catch((err) => {
+        console.log("Failed to fetch profile:", err);
+      });
+  }, []);
+
   const openLibrary = () => {
-    launchImageLibrary({
-      mediaType: "photo",
-      includeBase64: true,
-    }, (response) => {
-      console.log(response);
-    });
+    launchImageLibrary(
+      {
+        mediaType: "photo",
+        includeBase64: true,
+      },
+      (response) => {
+        console.log(response);
+      }
+    );
   };
 
   const openCamera = async () => {
@@ -56,11 +69,11 @@ export default function ProfileScreen() {
     Alert.alert("Uplaod image", "Choose an option", [
       {
         text: "Camera",
-        onPress: openCamera
+        onPress: openCamera,
       },
       {
         text: "Gallery",
-        onPress: openLibrary
+        onPress: openLibrary,
       },
     ]);
   };
@@ -79,7 +92,6 @@ export default function ProfileScreen() {
     }
   };
 
-
   const handleProfileImagePress = () => {
     showMessage();
   };
@@ -89,7 +101,14 @@ export default function ProfileScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.signedInContent}>
           <TouchableOpacity onPress={handleProfileImagePress}>
-            <Image source={profileImage ? { uri: profileImage } : require("../../assets/images/profile.jpg")} style={styles.profileImage} />
+            <Image
+              source={
+                profileImage
+                  ? { uri: profileImage }
+                  : require("../../assets/images/profile.jpg")
+              }
+              style={styles.profileImage}
+            />
           </TouchableOpacity>
           <Text style={styles.welcomeText}>Welcome, {user.email}</Text>
           <TouchableOpacity

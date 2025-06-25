@@ -1,6 +1,7 @@
 const express = require('express');
 const savedLocationsRoutes = require('./routes/savedLocationsRoutes');
 const authRoutes = require('./routes/authRoutes');
+const profilePictureRoutes = require('./routes/profileRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,16 +11,14 @@ app.use(express.json());
 // routes
 app.use('/api/savedLocations', savedLocationsRoutes);
 app.use('/api/auth', authRoutes);
-
-// start the server
-app.listen(PORT, () => {
-  console.log(`Backend server running on port ${PORT}`);
-});
+app.use('/api/profilePicture', profilePictureRoutes);
 
 // Catch-all 404 handler for unknown routes
 app.use((req, res) => {
   res.status(404).json({ error: 'Not Found', path: req.originalUrl });
 });
+
+module.exports = app;
 
 
 
