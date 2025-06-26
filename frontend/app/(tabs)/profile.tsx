@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { auth } from "../../firebase";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
-import axios from "axios";
 
 export default function ProfileScreen() {
   const [user, setUser] = useState<User | null>(null);
@@ -37,16 +36,27 @@ export default function ProfileScreen() {
 
         // Get the ID token
         const token = await currentUser.getIdToken();
+        console.log("Token:", token);
 
-        // using local ip address for testing, replace with your server's address
-        const response = await axios.get(
+        const response = await fetch(
           "http://aroundnus.onrender.com/api/profilePicture/data",
           {
-            headers: { Authorization: `Bearer ${token}` },
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
-        setProfileImage(response.data.profilePicture);
+        if (!response.ok) {
+          // Handle error
+          const error = await response.json();
+          console.log("Failed to fetch profile:", error);
+        } else {
+          const data = await response.json();
+          setProfileImage(data.profilePicture);
+        }
       } catch (err) {
         console.log("Failed to fetch profile:", err);
       }
