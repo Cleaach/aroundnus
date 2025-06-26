@@ -27,14 +27,31 @@ export default function ProfileScreen() {
   }, []);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/profilePicture/data")
-      .then((res) => {
-        setProfileImage(res.data.profilePicture);
-      })
-      .catch((err) => {
+    const fetchProfile = async () => {
+      try {
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+          console.log("No user logged in");
+          return;
+        }
+
+        // Get the ID token
+        const token = await currentUser.getIdToken();
+
+        const response = await axios.get(
+          "http://172.20.10.3:3000/api/profilePicture/data",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        setProfileImage(response.data.profilePicture);
+      } catch (err) {
         console.log("Failed to fetch profile:", err);
-      });
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   const openLibrary = () => {
