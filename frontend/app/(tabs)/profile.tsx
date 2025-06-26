@@ -40,7 +40,7 @@ export default function ProfileScreen() {
 
         // using local ip address for testing, replace with your server's address
         const response = await axios.get(
-          "http://172.20.10.3:3000/api/profilePicture/data",
+          "http://aroundnus.onrender.com/api/profilePicture/data",
           {
             headers: { Authorization: `Bearer ${token}` },
           }

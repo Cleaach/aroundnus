@@ -41,7 +41,7 @@ export default function SignInScreen() {
       if (user) {
         const token = await user.getIdToken();
         console.log(token);
-        await fetch("http://172.20.10.3:3000/api/auth/init-user-doc", {
+        await fetch("http://aroundnus.onrender.com/api/auth/init-user-doc", {
           // hard coded the ip address for testing
           //replace with backend URL in production
           method: "POST",
