@@ -28,7 +28,7 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/profilePicture/data")
+      .get("http://aroundnus.onrender.com/api/profilePicture/data")
       .then((res) => {
         setProfileImage(res.data.profilePicture);
       })
