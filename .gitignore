@@ -185,3 +185,4 @@ frontend/.env*.local
 frontend/*.tsbuildinfo
 
 frontend/app-example
+backend/config/serviceAccountKey.json
