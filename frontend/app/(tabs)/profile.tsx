@@ -38,6 +38,7 @@ export default function ProfileScreen() {
         // Get the ID token
         const token = await currentUser.getIdToken();
 
+        // using local ip address for testing, replace with your server's address
         const response = await axios.get(
           "http://172.20.10.3:3000/api/profilePicture/data",
           {
