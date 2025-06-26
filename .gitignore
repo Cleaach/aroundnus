@@ -1,7 +1,5 @@
 backend/node_modules/
 backend/config/serviceAccountKey.json
-backend/coverage/
-
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
