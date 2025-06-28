@@ -1,6 +1,5 @@
 const admin = require('firebase-admin');
 const serviceAccount = require('/etc/secrets/serviceAccountKey.json');
-console.log(serviceAccount);
 
 try {
   admin.app();

@@ -1,17 +1,16 @@
 const { admin } = require('../config/firebase');
 
 const registerUser = async (req, res) => {
-    const { email, password, displayName } = req.body;
+    const { email, password } = req.body;
     if (!email || !password) {
         return res.status(400).json({ error: 'Email and password required' });
     }
     try {
-        const userRecord = await admin.auth().createUser({ email, password, displayName });
+        const userRecord = await admin.auth().createUser({ email, password });
         res.status(201).json({
             message: 'User created successfully',
             uid: userRecord.uid,
             email: userRecord.email,
-            displayName: userRecord.displayName
         });
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -25,7 +24,6 @@ const loginUser = async (req, res) => {
 const initUserDoc = async (req, res) => {
     try {
         const { uid, email } = req.user;
-        const displayName = req.body.displayName || "";
 
         const userRef = admin.firestore().collection('users').doc(uid);
         const userDoc = await userRef.get();
@@ -40,7 +38,6 @@ const initUserDoc = async (req, res) => {
                 },
                 friends: [],
                 sharedLocation: [],
-                displayName: displayName,
             };
             await userRef.set(userTemplate);
             return res.status(201).json({ message: "User document created", user: userTemplate });

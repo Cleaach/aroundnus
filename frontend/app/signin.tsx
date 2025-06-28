@@ -10,7 +10,10 @@ import {
   StatusBar,
   ActivityIndicator,
 } from "react-native";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth } from "../firebase";
 
 export default function SignInScreen() {
@@ -38,17 +41,19 @@ export default function SignInScreen() {
       if (user) {
         const token = await user.getIdToken();
         console.log(token);
-        await fetch('http://aroundnus.onrender.com/api/auth/init-user-doc', {
-          method: 'POST',
+        await fetch("http://aroundnus.onrender.com/api/auth/init-user-doc", {
+          // hard coded the ip address for testing
+          //replace with backend URL in production
+          method: "POST",
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             email,
-            displayName: user.displayName,
           }),
         });
+        console.log("User initialized successfully");
       }
     } catch (error: any) {
       Alert.alert("Error", error.message || "An error occurred");
@@ -78,7 +83,8 @@ export default function SignInScreen() {
               {isCreatingAccount ? "Create an account" : "Welcome back"}
             </Text>
             <Text style={styles.description}>
-              Enter your email to {isCreatingAccount ? "sign up for" : "sign in to"} this app
+              Enter your email to{" "}
+              {isCreatingAccount ? "sign up for" : "sign in to"} this app
             </Text>
 
             <TextInput
@@ -257,4 +263,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
   },
-}); 
+});
