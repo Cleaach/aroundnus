@@ -49,39 +49,153 @@ ARoundNUS is an innovative augmented reality (AR) application designed to enhanc
 
 _To be updated_
 
-## User Guide
+## Exporting the React Native app from the source code
 
 ### Prerequisites
 
-- Node.js (v14 or later)
-- npm or yarn
-- Expo CLI (`npm install -g expo-cli`)
-- Expo Go app installed on your mobile device
-
-### Setup and Installation
-
-1. Clone the repository
-   ```bash
-   git clone https://github.com/your-username/aroundnus.git
-   cd aroundnus
-   ```
+- Node.js
+- JDK 17
+- npm
+- Unity Hub and Unity Engine 6000.1.x
+- Xcode
+- Google Cloud Console Account
+- Android Studio
+- An Android phone with Android 15+
+- An iPhone
 
 ### Procedure
 
-1. Install dependencies
+1. Change the working directory to `frontend/`.
+2. Install dependencies by running:
 
-   ```bash
-   cd frontend/
-   npm install
-   ```
+    ```bash
+    npm i
+    ```
 
-2. Start the app
+3. Run:
 
-   ```bash
-   npm run web
-   ```
+    ```bash
+    npx expo prebuild
+    ```
 
-3. Open the Expo Go app on your mobile device and scan the QR code displayed in the terminal.
+    This will automatically create the `frontend/android/` and `frontend/ios/` folders.
+
+4. Go to `frontend/node_modules/@azesmway/react-native-unity` and copy the contents of the `unity/` folder into the `unity/` folder at the root of the repository.
+5. Using Unity Hub, select **Add new project** and open the `unity/` folder (in the root of the repository).
+
+For the iOS app, follow steps below. For the Android counterpart, see the Android section.
+
+---
+
+### Preparing the iOS project using macOS
+
+*(Taken from the documentation for @azesmway/react-native-unity)*
+
+1. In Unity, go to **File > Build Profiles > iOS > Build** and build the project in any folder **except** inside the current repository.
+2. Open the built project in Xcode.
+3. Select the **Data** folder and check the box under "Target Membership" to include it in `UnityFramework`.
+4. In the Xcode project, navigate to `Unity-iPhone/Libraries/Plugins/iOS` and select `NativeCallProxy.h`. Change `UnityFramework`'s target membership from **Project** to **Public**.
+5. Sign the `UnityFramework.framework` and build a framework.
+6. Locate the built framework in Finder (right-click > Show in Finder) and move it to the plugin folder at `frontend/unity/builds/ios`.
+7. In `frontend/`, clear Pods cache and reinstall:
+
+    ```bash
+    rm -rf ios/Pods && rm -f ios/Podfile.lock && npx pod-install
+    ```
+
+---
+
+### Using the app on your iPhone
+
+*… TBD*
+
+---
+
+### Preparing the Android project
+
+*(Taken from the documentation for @azesmway/react-native-unity)*
+
+1. In Unity Hub, go to **File > Build Profiles > Android** and tick the **Export** option. Export the project to `frontend/unity/builds/android`.
+2. Remove the `<intent-filter>...</intent-filter>` block from:
+
+    ```
+    frontend/unity/builds/android/unityLibrary/src/main/AndroidManifest.xml
+    ```
+
+3. Edit `android/settings.gradle` to include:
+
+    ```groovy
+    include ':unityLibrary'
+    project(':unityLibrary').projectDir = new File('..\\unity\\builds\\android\\unityLibrary')
+    ```
+
+4. Edit `android/build.gradle` to add inside `allprojects`:
+
+    ```groovy
+    allprojects {
+      repositories {
+        flatDir {
+            dirs "${project(':unityLibrary').projectDir}/libs"
+        }
+        // ...
+      }
+    }
+    ```
+
+5. Add to `android/gradle.properties`:
+
+    ```properties
+    unityStreamingAssets=.unity3d
+    ```
+
+6. Add the following string to `android/app/src/main/res/values/strings.xml`:
+
+    ```xml
+    <string name="game_view_content_description">Game view</string>
+    ```
+
+7. Add your Google Maps API key to `frontend/android/app/src/main/AndroidManifest.xml`:
+
+    ```xml
+    <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="YOUR_API_KEY"/>
+    ```
+
+    If you don't have an API key, go to [Google Cloud Console](https://console.cloud.google.com/), create a project, and enable the **Google Maps SDK for Android API**.
+
+---
+
+### Testing the Android project
+
+1. Connect an Android phone to your computer with **USB debugging enabled**.  
+   *(To enable: go to **About phone > Software information**, tap **Build number** 7 times, enter password if needed, then go to **Developer settings > USB debugging**.)*
+2. In `frontend/`, run:
+
+    ```bash
+    npm run android
+    ```
+
+    The app will launch automatically on your phone.
+
+---
+
+### Exporting the Android project as .apk
+
+1. In `frontend/android`, run:
+
+    ```bash
+    ./gradlew assembleRelease
+    ```
+
+2. The `.apk` file will be generated at:
+
+    ```
+    frontend/android/app/build/outputs/apk/release/app-release.apk
+    ```
+
+---
+
 
 ## Acknowledgements
 
