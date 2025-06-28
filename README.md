@@ -63,7 +63,9 @@ _To be updated_
 - An Android phone with Android 15+
 - An iPhone
 
-### Procedure
+---
+
+### Initial set-up
 
 1. Change the working directory to `frontend/`.
 2. Install dependencies by running:
@@ -83,7 +85,7 @@ _To be updated_
 4. Go to `frontend/node_modules/@azesmway/react-native-unity` and copy the contents of the `unity/` folder into the `unity/` folder at the root of the repository.
 5. Using Unity Hub, select **Add new project** and open the `unity/` folder (in the root of the repository).
 
-For the iOS app, follow steps below. For the Android counterpart, see the Android section.
+Refer to the relevant per-OS sections below for your intended phone's OS.
 
 ---
 
