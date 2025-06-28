@@ -58,9 +58,6 @@ export default function ProfileScreen() {
           setProfileImage(data.profilePicture);
         }
       } catch (err) {
-        console.log("Failed to fetch profile:", err);
-      }
-    };
 
     fetchProfile();
   }, []);

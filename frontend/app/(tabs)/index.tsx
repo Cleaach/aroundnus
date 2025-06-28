@@ -9,8 +9,18 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Image,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { FontAwesome } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+
+type LocationType = {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+} | null;
 
 const dummyDestinations = [
   "UTown",
@@ -25,26 +35,26 @@ const dummyDestinations = [
 ];
 
 export default function HomeScreen() {
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState<LocationType>(null);
   const [region, setRegion] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedDestination, setSelectedDestination] = useState<string | null>(
     null
   );
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") return;
 
-      let loc = await Location.getCurrentPositionAsync({});
-      setLocation(loc.coords);
-      setRegion({
-        latitude: loc.coords.latitude,
-        longitude: loc.coords.longitude,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
+      let { coords } = await Location.getCurrentPositionAsync({});
+      setLocation({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
       });
     })();
   }, []);
@@ -71,15 +81,24 @@ export default function HomeScreen() {
     Keyboard.dismiss();
   };
 
+  const handleSearch = () => {
+    console.log('Searching for:', searchQuery);
+  };
+
+  const handleNavigate = () => {
+    console.log('Navigate button pressed, attempting to navigate to Unity modal');
+    router.navigate('/(modals)/unity');
+  };
+
   const isWeb = Platform.OS === "web";
 
   return (
     <View style={styles.container}>
-      {!isWeb && region ? (
+      {!isWeb && location ? (
         <MapView
           style={StyleSheet.absoluteFillObject}
           provider={PROVIDER_GOOGLE}
-          initialRegion={region}
+          initialRegion={location}
           showsUserLocation
         >
           {location && (
@@ -136,7 +155,7 @@ export default function HomeScreen() {
         )}
 
         {selectedDestination && (
-          <TouchableOpacity style={styles.navigateButton} onPress={() => {}}>
+          <TouchableOpacity style={styles.navigateButton} onPress={handleNavigate}>
             <Text style={styles.navigateButtonText}>Navigate</Text>
           </TouchableOpacity>
         )}
