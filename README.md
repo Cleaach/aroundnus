@@ -178,7 +178,7 @@ Refer to the relevant per-OS sections below for your intended phone's OS.
     npm run android
     ```
 
-    The app will launch automatically on your phone.
+    The app will launch automatically on your phone. For development, any changes to the source code will generally be reflected immediately upon pressing `r` in the terminal to reload the app. Otherwise, rerun `npm run android`.
 
 ---
 
