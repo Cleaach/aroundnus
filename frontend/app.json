@@ -14,7 +14,8 @@
         "NSCameraUsageDescription": "Allow $(ARoundNUS) to access your camera to set your profile picture.",
         "NSPhotoLibraryUsageDescription": "Allow $(ARoundNUS) to access your photo library to set your profile picture.",
         "NSPhotoLibraryAddUsageDescription": "Allow $(ARoundNUS) to save photos."
-      }
+      },
+      "bundleIdentifier": "com.anonymous.ARoundNUS"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,8 +26,12 @@
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
-      ]
+      ],
+      "package": "com.anonymous.ARoundNUS"
     },
     "web": {
       "bundler": "metro",
@@ -47,6 +52,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2ad365f5-b523-495c-9993-487e24d5a719"
+      }
     }
   }
 }

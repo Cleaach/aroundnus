@@ -4,7 +4,7 @@ import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { useColorScheme } from 'react-native';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { auth } from '../firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 
@@ -45,12 +45,14 @@ export default function RootLayout() {
   useEffect(() => {
     if (!isAuthLoading) {
       const inAuthGroup = segments[0] === '(tabs)';
+      const inModalGroup = segments[0] === '(modals)';
+      const inSigninPage = segments[0] === 'signin';
       
-      if (!user && inAuthGroup) {
+      if (!user && (inAuthGroup || inModalGroup)) {
         // Redirect to sign in if not signed in and trying to access protected routes
         router.replace('/signin' as any);
-      } else if (user && !inAuthGroup) {
-        // Redirect to main app if signed in and trying to access auth routes
+      } else if (user && inSigninPage) {
+        // Redirect to main app if signed in and on signin page
         router.replace('/(tabs)');
       }
     }
@@ -77,6 +79,8 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="signin" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(modals)" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>
   );
