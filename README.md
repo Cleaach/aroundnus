@@ -100,10 +100,10 @@ Refer to the relevant per-OS sections below for your intended phone's OS.
 
 1. In Unity, go to **File > Build Profiles > iOS > Build** and build the project in any folder **except** inside the current repository.
 2. Open the built project in Xcode.
-3. Select the **Data** folder and check the box under "Target Membership" to include it in `UnityFramework`.
-4. In the Xcode project, navigate to `Unity-iPhone/Libraries/Plugins/iOS` and select `NativeCallProxy.h`. Change `UnityFramework`'s target membership from **Project** to **Public**.
-5. Sign the `UnityFramework.framework` and build a framework.
-6. Locate the built framework in Finder (right-click > Show in Finder) and move it to the plugin folder at `frontend/unity/builds/ios`.
+3. Select the **Data** folder and check the box under "Target Membership" to include it in `UnityFramework`. ![Image to visualize step](./assets/ios1.png)
+4. In the Xcode project, navigate to `Unity-iPhone/Libraries/Plugins/iOS` and select `NativeCallProxy.h`. Change `UnityFramework`'s target membership from **Project** to **Public**. ![Image to visualize step](./assets/ios2.png)
+5. Sign the `UnityFramework.framework` and build a framework. ![Image to visualize step](./assets/ios3.png)
+6. Locate the built framework in Finder (right-click > Show in Finder) and move it to `frontend/unity/builds/ios/`. ![Image to visualize step](./assets/ios4.png)
 7. In `frontend/`, clear Pods cache and reinstall:
 
     ```bash
@@ -172,9 +172,7 @@ Refer to the relevant per-OS sections below for your intended phone's OS.
 7. Add your Google Maps API key to `frontend/android/app/src/main/AndroidManifest.xml`:
 
     ```xml
-    <meta-data
-        android:name="com.google.android.geo.API_KEY"
-        android:value="YOUR_API_KEY"/>
+    <meta-data android:name="com.google.android.geo.API_KEY" android:value="YOUR_API_KEY_HERE"/>
     ```
 
     If you don't have an API key, go to [Google Cloud Console](https://console.cloud.google.com/), create a project, and enable the **Google Maps SDK for Android API**.
@@ -214,4 +212,4 @@ Refer to the relevant per-OS sections below for your intended phone's OS.
 
 ## Acknowledgements
 
-Made by Clement Aditya Chendra and Dylan Ananda Astono as part of the 2025 Orbital program by the School of Computing at the National University of Singapore.
+Developed by Clement Aditya Chendra and Dylan Ananda Astono.
