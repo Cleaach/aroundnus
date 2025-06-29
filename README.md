@@ -21,8 +21,6 @@ ARoundNUS is an innovative augmented reality (AR) application designed to enhanc
   - _Justification_: Enables development for both iOS and Android with a single codebase
 - **Expo**: Development framework and platform for React Native
   - _Justification_: Simplifies development process and provides essential tools and services
-- **React Navigation**: Navigation library for React Native applications
-  - _Justification_: Provides a seamless navigation experience between screens
 
 ### Authentication
 
@@ -35,7 +33,7 @@ ARoundNUS is an innovative augmented reality (AR) application designed to enhanc
 
 - **Unity**:
   - _Justification_: Industry standard with a wide range of libraries that integrate seamlessly with Android's ARCore and iOS' ARKit SDKs and the ability to embed Unity projects within React Native applications
-- **Immersal SDK**
+- **MultiSet SDK**
   - _Justification_: Granular control over mapping process while still being able to simply use any LiDAR-enabled smartphone, good localization speeds and accuracies, and the ability to stitch maps together thereby simplifying scalability of future extensions greatly
 
 ### Backend
@@ -45,9 +43,15 @@ ARoundNUS is an innovative augmented reality (AR) application designed to enhanc
 - **Firestore**: NoSQL cloud database
   - _Justification_: Flexible, scalable database for storing application data
 
-## Development Plan
+## Using the app
 
-_To be updated_
+### Android
+
+The `.apk` file for this project can be located in the root of the repository. Download it onto your Android phone and open it.
+
+### iOS
+
+To install the app, you need to manually export the app from the source code. Follow the iOS-relevant instructions in the next section.
 
 ## Exporting the React Native app from the source code
 
@@ -82,8 +86,9 @@ _To be updated_
 
     This will automatically create the `frontend/android/` and `frontend/ios/` folders.
 
-4. Go to `frontend/node_modules/@azesmway/react-native-unity` and copy the contents of the `unity/` folder into the `unity/` folder at the root of the repository.
-5. Using Unity Hub, select **Add new project** and open the `unity/` folder (in the root of the repository).
+4. Replace `frontend/node_modules/@azesmway/react-native-unity/android/src/main/java/com/azesmwayreactnativeunity/UPlayer.java` with the `UIPlayer.java` file in the root directory of the repository.
+5. Go to `frontend/node_modules/@azesmway/react-native-unity` and copy the contents of the `unity/` folder into the `unity/` folder at the root of the repository.
+6. Using Unity Hub, select **Add new project** and open the `unity/` folder (in the root of the repository).
 
 Refer to the relevant per-OS sections below for your intended phone's OS.
 
@@ -109,7 +114,15 @@ Refer to the relevant per-OS sections below for your intended phone's OS.
 
 ### Using the app on your iPhone
 
-*… TBD*
+1. In `frontend/`, run:
+
+    ```bash
+    npm run ios
+    ```
+
+2. An `.xcodeproj` file will be generated in `frontend/ios/` upon build completion. Open it in Xcode.
+3. Connect an iPhone to your Mac.
+4. If necessary, manage the signing capabilities of the Xcode project. Then, press the play button to build it onto your iPhone. The app will install itself and will be ready for use after the build is complete.
 
 ---
 
