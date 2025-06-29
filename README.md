@@ -252,6 +252,19 @@ Refer to the relevant per-OS sections below for your intended phone's OS.
 
 ---
 
+### Solving common errors
+
+1. Generally, it is good to clean the previous failed build by running
+
+   ```bash
+   ./gradlew clean
+   ```
+
+   in `frontend/android`.
+
+2. When using Windows, enable long paths in the Registry Editor.
+
+3. Delete `implementation(name: 'unityandroidpermissions', ext:'aar')` from `unity/builds/android/unityLibrary/build.gradle`.
 
 ## Acknowledgements
 
