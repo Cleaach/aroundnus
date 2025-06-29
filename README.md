@@ -48,13 +48,10 @@ ARoundNUS is an innovative augmented reality (AR) application designed to enhanc
 ```
 aroundnus/
 │
-├── README.md
-├── .gitignore
-├── UIPlayer.java
-│
-├── assets/                  # General project assets (images, docs, etc.)
+├── assets/                  # Images for README.md
 │
 ├── frontend/                # React Native (Expo) mobile app
+│   │
 │   ├── app/                 # App entry and routing (Expo Router)
 │   │   ├── (tabs)/          # Tab navigation screens
 │   │   ├── (modals)/        # Modal screens
@@ -67,19 +64,10 @@ aroundnus/
 │   ├── hooks/               # Custom React hooks
 │   ├── scripts/             # Utility scripts (e.g., reset-project.js)
 │   ├── assets/              # App-specific assets (images, fonts)
-│   ├── unity/               # Unity build outputs for mobile
-│   │   ├── builds/
-│   │   │   ├── android/
-│   │   │   └── ios/
-│   ├── android/             # Android native project (generated)
-│   ├── ios/                 # iOS native project (generated)
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── app.json
-│   ├── eas.json
-│   └── eslint.config.js
+│   └── ...                  # Other files
 │
 ├── backend/                 # Node.js/Express backend API
+│   │
 │   ├── config/              # Configuration files (e.g., firebase.js)
 │   ├── controllers/         # Route controllers (business logic)
 │   ├── middleware/          # Express middleware (e.g., auth)
@@ -87,16 +75,12 @@ aroundnus/
 │   ├── tests/               # Automated tests (Jest)
 │   ├── coverage/            # Test coverage reports
 │   ├── index.js             # API entry point
-│   ├── package.json
-│   └── package-lock.json
+│   └── ...                  # Other files
 │
-├── unity/                   # Unity project (for AR/3D)
-│   ├── Assets/              # Unity assets (scenes, scripts, prefabs, etc.)
-│   ├── Packages/            # Unity package manager files
-│   ├── ProjectSettings/     # Unity project settings
-│   └── ...                  # Other Unity-generated folders/files
+├── unity/                   # Unity project
 │
-└── .gitattributes
+└── ...                      # Other files
+
 ```
 
 ## Using the app
