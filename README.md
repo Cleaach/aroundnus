@@ -42,6 +42,62 @@ ARoundNUS is an innovative augmented reality (AR) application designed to enhanc
   - _Justification_: Provides authentication, database, and storage services in one platform
 - **Firestore**: NoSQL cloud database
   - _Justification_: Flexible, scalable database for storing application data
+ 
+## File structure
+
+```
+aroundnus/
+│
+├── README.md
+├── .gitignore
+├── UIPlayer.java
+│
+├── assets/                  # General project assets (images, docs, etc.)
+│
+├── frontend/                # React Native (Expo) mobile app
+│   ├── app/                 # App entry and routing (Expo Router)
+│   │   ├── (tabs)/          # Tab navigation screens
+│   │   ├── (modals)/        # Modal screens
+│   │   ├── _layout.tsx      # Main layout
+│   │   └── signin.tsx       # Sign-in screen
+│   ├── components/          # Reusable UI components
+│   │   ├── ui/              # UI primitives (buttons, icons, etc.)
+│   │   └── navigation/      # Navigation-related components
+│   ├── constants/           # App-wide constants (colors, etc.)
+│   ├── hooks/               # Custom React hooks
+│   ├── scripts/             # Utility scripts (e.g., reset-project.js)
+│   ├── assets/              # App-specific assets (images, fonts)
+│   ├── unity/               # Unity build outputs for mobile
+│   │   ├── builds/
+│   │   │   ├── android/
+│   │   │   └── ios/
+│   ├── android/             # Android native project (generated)
+│   ├── ios/                 # iOS native project (generated)
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── app.json
+│   ├── eas.json
+│   └── eslint.config.js
+│
+├── backend/                 # Node.js/Express backend API
+│   ├── config/              # Configuration files (e.g., firebase.js)
+│   ├── controllers/         # Route controllers (business logic)
+│   ├── middleware/          # Express middleware (e.g., auth)
+│   ├── routes/              # Express route definitions
+│   ├── tests/               # Automated tests (Jest)
+│   ├── coverage/            # Test coverage reports
+│   ├── index.js             # API entry point
+│   ├── package.json
+│   └── package-lock.json
+│
+├── unity/                   # Unity project (for AR/3D)
+│   ├── Assets/              # Unity assets (scenes, scripts, prefabs, etc.)
+│   ├── Packages/            # Unity package manager files
+│   ├── ProjectSettings/     # Unity project settings
+│   └── ...                  # Other Unity-generated folders/files
+│
+└── .gitattributes
+```
 
 ## Using the app
 
