@@ -93,13 +93,16 @@ The `.apk` file for this project can be located in the root of the repository. D
 
 To install the app, you need to manually export the app from the source code. Follow the iOS-relevant instructions in the next section.
 
-## Exporting the React Native app from the source code
+## Exporting the app
+
+The following procedure is to directly, from the source code, export the app as an `.apk` file and/or onto an iPhone.
 
 ### Prerequisites
 
 - Node.js
 - JDK 17
 - npm
+- Expo
 - Unity Hub and Unity Engine 6000.1.x
 - Xcode
 - Google Cloud Console Account
