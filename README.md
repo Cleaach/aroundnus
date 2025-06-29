@@ -87,7 +87,7 @@ aroundnus/
 
 ### Android
 
-The `.apk` file for this project can be located in the root of the repository. Download it onto your Android phone and open it.
+The `.apk` file for this project can be downloaded [here](youtube.com). Download it onto your Android phone and open it.
 
 ### iOS
 
