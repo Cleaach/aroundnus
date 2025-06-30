@@ -87,7 +87,7 @@ aroundnus/
 
 ### Android
 
-The `.apk` file for this project can be downloaded [here](youtube.com). Download it onto your Android phone and open it.
+The `.apk` file for this project can be downloaded [here](https://drive.google.com/file/d/1Q6sugD84CPLK9TzIKaKB-qIV-KIWFXY6/view?usp=drive_link). Download it onto your Android phone and open it.
 
 ### iOS
 
