@@ -1,14 +1,12 @@
 # ARoundNUS
 
+ARoundNUS is an innovative augmented reality (AR) application designed to enhance the navigation and exploration experience at the National University of Singapore (NUS). The app aims to help students, staff, and visitors discover and interact with various locations and points of interest across the campus in an engaging and intuitive way.
+
 <div align="center">
   <img src="assets/demo-signin.jpeg" width="30%" />
   <img src="assets/demo-home.jpeg" width="30%" />
   <img src="assets/demo-nav.jpeg" width="30%" />
 </div>
-
-## Project Idea
-
-ARoundNUS is an innovative augmented reality (AR) application designed to enhance the navigation and exploration experience at the National University of Singapore (NUS). The app aims to help students, staff, and visitors discover and interact with various locations and points of interest across the campus in an engaging and intuitive way.
 
 ## Features
 
