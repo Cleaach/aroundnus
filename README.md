@@ -1,9 +1,9 @@
 # ARoundNUS
 
-<p float="left">
-  <img src="screenshots/screen1.png" width="30%" />
-  <img src="screenshots/screen2.png" width="30%" />
-  <img src="screenshots/screen3.png" width="30%" />
+<p float="center">
+  <img src="assets/demo-signin.jpeg" width="30%" />
+  <img src="assets/demo-home.jpeg" width="30%" />
+  <img src="assets/demo-nav.jpeg" width="30%" />
 </p>
 
 ## Project Idea
