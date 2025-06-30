@@ -40,6 +40,7 @@ const initUserDoc = async (req, res) => {
                 sharedLocation: [],
             };
             await userRef.set(userTemplate);
+            console.log("created user document for", uid);
             return res.status(201).json({ message: "User document created", user: userTemplate });
         } else {
             return res.status(200).json({ message: "User document already exists" });
