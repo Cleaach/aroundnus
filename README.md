@@ -1,8 +1,12 @@
 # ARoundNUS
 
-## Project Idea
-
 ARoundNUS is an innovative augmented reality (AR) application designed to enhance the navigation and exploration experience at the National University of Singapore (NUS). The app aims to help students, staff, and visitors discover and interact with various locations and points of interest across the campus in an engaging and intuitive way.
+
+<div align="center">
+  <img src="assets/demo-signin.jpeg" width="30%" />
+  <img src="assets/demo-home.jpeg" width="30%" />
+  <img src="assets/demo-nav.jpeg" width="30%" />
+</div>
 
 ## Features
 
@@ -87,7 +91,7 @@ aroundnus/
 
 ### Android
 
-The `.apk` file for this project can be downloaded [here](youtube.com). Download it onto your Android phone and open it.
+The `.apk` file for this project can be downloaded [here](https://drive.google.com/file/d/1Q6sugD84CPLK9TzIKaKB-qIV-KIWFXY6/view?usp=drive_link). Download it onto your Android phone and open it.
 
 ### iOS
 
@@ -131,7 +135,7 @@ The following procedure is to directly, from the source code, export the app as 
 
 4. Replace `frontend/node_modules/@azesmway/react-native-unity/android/src/main/java/com/azesmwayreactnativeunity/UPlayer.java` with the `UIPlayer.java` file in the root directory of the repository.
 5. Go to `frontend/node_modules/@azesmway/react-native-unity` and copy the contents of the `unity/` folder into the `unity/` folder at the root of the repository.
-6. Using Unity Hub, select **Add new project** and open the `unity/` folder (in the root of the repository).
+6. Using Unity Hub, select **Add new project** and open the `unity/` folder (in the root of the repository). In Unity, if not opened already, open the Navigation scene under Scenes folder.
 
 Refer to the relevant per-OS sections below for your intended phone's OS.
 
@@ -219,6 +223,8 @@ Refer to the relevant per-OS sections below for your intended phone's OS.
     ```
 
     If you don't have an API key, go to [Google Cloud Console](https://console.cloud.google.com/), create a project, and enable the **Google Maps SDK for Android API**.
+8. Create a new file named `local.properties` in `frontend/android/` and paste `sdk.dir=<YOUR_ANDROID_SDK_PATH_HERE>` into it. (You can find your Android SDK path by going to Android Studio > settings icon > copy the text in Android SDK Location).
+
 
 ---
 
@@ -265,6 +271,8 @@ Refer to the relevant per-OS sections below for your intended phone's OS.
 2. When using Windows, enable long paths in the Registry Editor.
 
 3. Delete `implementation(name: 'unityandroidpermissions', ext:'aar')` from `unity/builds/android/unityLibrary/build.gradle`.
+
+4. If the terminal returns an error stating `This computer is not authorized for developing on Device XXXXXXX`, go to your Android phone’s settings > Developer options > Revoke USB debugging authorizations. Then, reconnect your Android phone (and re-enable USB debugging if it was turned off automatically).
 
 ## Acknowledgements
 
