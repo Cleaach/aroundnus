@@ -1,6 +1,10 @@
 # ARoundNUS
 
-![Demo image](assets/demo-signin.jpeg)
+<p float="left">
+  <img src="screenshots/screen1.png" width="30%" />
+  <img src="screenshots/screen2.png" width="30%" />
+  <img src="screenshots/screen3.png" width="30%" />
+</p>
 
 ## Project Idea
 
