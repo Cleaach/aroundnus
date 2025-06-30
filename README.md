@@ -1,10 +1,10 @@
 # ARoundNUS
 
-<p float="center">
+<div align="center">
   <img src="assets/demo-signin.jpeg" width="30%" />
   <img src="assets/demo-home.jpeg" width="30%" />
   <img src="assets/demo-nav.jpeg" width="30%" />
-</p>
+</div>
 
 ## Project Idea
 
