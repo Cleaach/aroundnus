@@ -36,15 +36,14 @@ export default function ProfileScreen() {
 
         // Get the ID token
         const token = await currentUser.getIdToken();
-        console.log("Token:", token);
 
         const response = await fetch(
           "http://aroundnus.onrender.com/api/profilePicture/data",
           {
             method: "GET",
             headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+              'Content-Type': "application/json",
+              'Authorization': `Bearer ${token}`,
             },
           }
         );
