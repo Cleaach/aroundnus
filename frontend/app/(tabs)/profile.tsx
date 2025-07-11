@@ -8,6 +8,8 @@ import {
   View,
   SafeAreaView,
   Image,
+  ScrollView,
+  RefreshControl,
 } from "react-native";
 import { auth } from "../../firebase";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
@@ -16,6 +18,7 @@ export default function ProfileScreen() {
   const [user, setUser] = useState<User | null>(null);
   const [profileImage, setProfileImage] = useState<string | undefined>(undefined);
   const [refreshFlag, setRefreshFlag] = useState(false); // trigger profile refresh
+  const [refreshing, setRefreshing] = useState(false); // for pull-to-refresh
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -24,36 +27,38 @@ export default function ProfileScreen() {
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const currentUser = auth.currentUser;
-        if (!currentUser) {
-          console.log("No user logged in");
-          return;
-        }
-        const token = await currentUser.getIdToken();
-        const response = await fetch(
-          'https://aroundnus.onrender.com/api/profilePicture/data',
-          {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-        if (!response.ok) {
-          const error = await response.json();
-          console.log("Failed to fetch profile:", error);
-        } else {
-          const data = await response.json();
-          setProfileImage(data.profilePicture);
-        }
-      } catch (err) {
-        console.log("Failed to fetch profile:", err);
+  // Move fetchProfile outside useEffect so it can be called from refresh
+  const fetchProfile = async () => {
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        console.log("No user logged in");
+        return;
       }
-    };
+      const token = await currentUser.getIdToken();
+      const response = await fetch(
+        'https://aroundnus.onrender.com/api/profilePicture/data',
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      if (!response.ok) {
+        const error = await response.json();
+        console.log("Failed to fetch profile:", error);
+      } else {
+        const data = await response.json();
+        setProfileImage(data.profilePicture);
+      }
+    } catch (err) {
+      console.log("Failed to fetch profile:", err);
+    }
+  };
+
+  useEffect(() => {
     if (user) fetchProfile();
   }, [user, refreshFlag]);
 
@@ -166,28 +171,42 @@ export default function ProfileScreen() {
     showMessage();
   };
 
+  // Pull-to-refresh handler
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchProfile();
+    setRefreshing(false);
+  };
+
   if (user) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.signedInContent}>
-          <TouchableOpacity onPress={handleProfileImagePress}>
-            <Image
-              source={
-                profileImage
-                  ? { uri: profileImage }
-                  : require("../../assets/images/profile.jpg")
-              }
-              style={styles.profileImage}
-            />
-          </TouchableOpacity>
-          <Text style={styles.welcomeText}>Welcome, {user.email}</Text>
-          <TouchableOpacity
-            style={styles.signOutButton}
-            onPress={handleSignOut}
-          >
-            <Text style={styles.buttonText}>Sign Out</Text>
-          </TouchableOpacity>
-        </View>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <View style={styles.signedInContent}>
+            <TouchableOpacity onPress={handleProfileImagePress}>
+              <Image
+                source={
+                  profileImage
+                    ? { uri: profileImage }
+                    : require("../../assets/images/profile.jpg")
+                }
+                style={styles.profileImage}
+              />
+            </TouchableOpacity>
+            <Text style={styles.welcomeText}>Welcome, {user.email}</Text>
+            <TouchableOpacity
+              style={styles.signOutButton}
+              onPress={handleSignOut}
+            >
+              <Text style={styles.buttonText}>Sign Out</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
