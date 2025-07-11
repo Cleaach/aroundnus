@@ -113,7 +113,7 @@ export default function HomeScreen() {
         </MapView>
       ) : (
         <View style={[StyleSheet.absoluteFill, styles.webPlaceholder]}>
-          <Text style={styles.webText}>Map not supported on web.</Text>
+          <Text style={styles.webText}>Connecting to Google Maps...</Text>
         </View>
       )}
 
