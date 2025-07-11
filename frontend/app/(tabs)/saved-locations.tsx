@@ -12,6 +12,8 @@ import {
   RefreshControl,
 } from 'react-native';
 import { auth } from '../../firebase';
+import { FontAwesome } from '@expo/vector-icons';
+import { v4 as uuidv4 } from 'uuid';
 
 // Define the type for a saved location
 interface SavedLocation {
@@ -71,13 +73,15 @@ export default function SavedLocationsScreen() {
       const user = auth.currentUser;
       if (!user) throw new Error('Not logged in');
       const token = await user.getIdToken();
+      // Generate a unique id for the new location
+      const locationToAdd = { id: uuidv4(), name: newLocation };
       const res = await fetch('https://aroundnus.onrender.com/api/savedLocations/add', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ location: { name: newLocation } }),
+        body: JSON.stringify({ location: locationToAdd }),
       });
       if (!res.ok) throw new Error('Failed to add location');
       setNewLocation('');
@@ -90,6 +94,10 @@ export default function SavedLocationsScreen() {
   };
 
   const handleDelete = async (location: SavedLocation) => {
+    if (!location.id) {
+      setError('Location does not have an id.');
+      return;
+    }
     Alert.alert('Delete', `Delete ${location.name}?`, [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -100,13 +108,14 @@ export default function SavedLocationsScreen() {
             const user = auth.currentUser;
             if (!user) throw new Error('Not logged in');
             const token = await user.getIdToken();
+            // Only send the id for deletion
             const res = await fetch('https://aroundnus.onrender.com/api/savedLocations/delete', {
               method: 'DELETE',
               headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ location }),
+              body: JSON.stringify({ location: { id: location.id } }),
             });
             if (!res.ok) throw new Error('Failed to delete location');
             fetchLocations();
@@ -153,7 +162,7 @@ export default function SavedLocationsScreen() {
           <View style={styles.locationRow}>
             <Text style={styles.locationName}>{item.name}</Text>
             <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item)}>
-              <Text style={styles.deleteButtonText}>Delete</Text>
+              <FontAwesome name="trash" size={20} color="#666" />
             </TouchableOpacity>
           </View>
         )}
@@ -177,7 +186,10 @@ const styles = StyleSheet.create({
   error: { color: 'red', textAlign: 'center', marginBottom: 8 },
   locationRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#eee' },
   locationName: { fontSize: 16 },
-  deleteButton: { backgroundColor: '#ff3b30', borderRadius: 8, paddingVertical: 6, paddingHorizontal: 12 },
+  deleteButton: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   deleteButtonText: { color: '#fff', fontWeight: 'bold' },
   empty: { textAlign: 'center', color: '#999', marginTop: 40 },
 }); 
