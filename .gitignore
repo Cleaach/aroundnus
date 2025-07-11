@@ -225,4 +225,7 @@ frontend/android/*.log
 frontend/android/*.keystore
 frontend/android/*.jks
 frontend/android/obj/
+
+
 backend/config/serviceAccountKey.json
+backend/coverage/

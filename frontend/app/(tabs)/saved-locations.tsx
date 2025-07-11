@@ -12,6 +12,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { auth } from '../../firebase';
+import { FontAwesome } from '@expo/vector-icons';
 
 // Define the type for a saved location
 interface SavedLocation {
@@ -153,7 +154,7 @@ export default function SavedLocationsScreen() {
           <View style={styles.locationRow}>
             <Text style={styles.locationName}>{item.name}</Text>
             <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item)}>
-              <Text style={styles.deleteButtonText}>Delete</Text>
+              <FontAwesome name="trash" size={20} color="#666" />
             </TouchableOpacity>
           </View>
         )}
@@ -177,7 +178,10 @@ const styles = StyleSheet.create({
   error: { color: 'red', textAlign: 'center', marginBottom: 8 },
   locationRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#eee' },
   locationName: { fontSize: 16 },
-  deleteButton: { backgroundColor: '#ff3b30', borderRadius: 8, paddingVertical: 6, paddingHorizontal: 12 },
+  deleteButton: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   deleteButtonText: { color: '#fff', fontWeight: 'bold' },
   empty: { textAlign: 'center', color: '#999', marginTop: 40 },
 }); 
