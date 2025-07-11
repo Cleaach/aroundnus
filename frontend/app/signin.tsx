@@ -37,7 +37,6 @@ export default function SignInScreen() {
       const user = auth.currentUser;
       if (user) {
         const token = await user.getIdToken();
-        console.log("arrived here")
         await fetch('https://aroundnus.onrender.com/api/auth/init-user-doc', {
           method: 'POST',
           headers: {
@@ -49,7 +48,6 @@ export default function SignInScreen() {
             displayName: user.displayName,
           }),
         });
-        console.log("arrived here 2")
       }
     } catch (error: any) {
       Alert.alert("Error", error.message || "An error occurred");

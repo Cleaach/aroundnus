@@ -32,15 +32,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="unity"
-        options={{
-          title: "Unity View",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'cube' : 'cube-outline'} color={color} />
-          ),
-        }}
-      />
     </Tabs>
   );
 }

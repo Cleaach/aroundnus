@@ -38,12 +38,12 @@ export default function ProfileScreen() {
         const token = await currentUser.getIdToken();
 
         const response = await fetch(
-          "http://aroundnus.onrender.com/api/profilePicture/data",
+          'https://aroundnus.onrender.com/api/profilePicture/data',
           {
-            method: "GET",
+            method: 'GET',
             headers: {
-              'Content-Type': "application/json",
               'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
             },
           }
         );
