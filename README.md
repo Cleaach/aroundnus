@@ -184,11 +184,13 @@ Refer to the relevant per-OS sections below for your intended phone's OS.
     frontend/unity/builds/android/unityLibrary/src/main/AndroidManifest.xml
     ```
 
-3. Edit `android/settings.gradle` to include:
+3. Add to `android/settings.gradle`:
 
     ```groovy
     include ':unityLibrary'
     project(':unityLibrary').projectDir = new File('..\\unity\\builds\\android\\unityLibrary')
+
+    include ':unityLibrary:xrmanifest.androidlib'
     ```
 
 4. Edit `android/build.gradle` to add inside `allprojects`:
@@ -270,9 +272,7 @@ Refer to the relevant per-OS sections below for your intended phone's OS.
 
 2. When using Windows, enable long paths in the Registry Editor.
 
-3. Delete `implementation(name: 'unityandroidpermissions', ext:'aar')` from `unity/builds/android/unityLibrary/build.gradle`.
-
-4. If the terminal returns an error stating `This computer is not authorized for developing on Device XXXXXXX`, go to your Android phone’s settings > Developer options > Revoke USB debugging authorizations. Then, reconnect your Android phone (and re-enable USB debugging if it was turned off automatically).
+3. If the terminal returns an error stating `This computer is not authorized for developing on Device XXXXXXX`, go to your Android phone’s settings > Developer options > Revoke USB debugging authorizations. Then, reconnect your Android phone (and re-enable USB debugging if it was turned off automatically).
 
 ## Acknowledgements
 
