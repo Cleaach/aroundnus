@@ -12,6 +12,8 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
 import { auth } from "../firebase";
@@ -79,11 +81,13 @@ export default function SignInScreen() {
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>Welcome</Text>
-        <View style={styles.centeredContent}>
-          <View style={styles.formSection}>
-            <Text style={styles.description}>Enter your email to sign in to ARoundNUS</Text>
-
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <View style={styles.centeredContent}>
+            <Text style={styles.title}>Welcome</Text>
+            <Text style={styles.description}>Enter your email and password to sign in to ARoundNUS.</Text>
             {/* Email input with arrow button */}
             <View style={styles.emailRow}>
               <TextInput
@@ -109,7 +113,6 @@ export default function SignInScreen() {
                 </TouchableOpacity>
               )}
             </View>
-
             {/* Password input and continue button only show after arrow is pressed, with animation */}
             {showPasswordInput && (
               <Animated.View
@@ -123,18 +126,22 @@ export default function SignInScreen() {
                       }),
                     },
                   ],
+                  width: '100%',
+                  alignItems: 'center',
                 }}
               >
-                <TextInput
-                  style={styles.emailInput}
-                  placeholder="Password"
-                  placeholderTextColor="#666666"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                  autoCapitalize="none"
-                  autoComplete="password"
-                />
+                <View style={{ width: '100%' }}>
+                  <TextInput
+                    style={styles.emailInput}
+                    placeholder="Password"
+                    placeholderTextColor="#666666"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                    autoCapitalize="none"
+                    autoComplete="password"
+                  />
+                </View>
                 <TouchableOpacity
                   style={[styles.continueButton, { marginTop: 16 }]}
                   onPress={handleEmailSubmit}
@@ -143,16 +150,13 @@ export default function SignInScreen() {
                   {isLoading ? (
                     <ActivityIndicator color="white" />
                   ) : (
-                    <Text style={styles.continueButtonText}>Continue</Text>
+                    <Text style={styles.continueButtonText}>Go</Text>
                   )}
                 </TouchableOpacity>
               </Animated.View>
             )}
-
           </View>
-
-          {/* No toggle needed, flow is automatic */}
-        </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </>
   );
@@ -214,10 +218,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: "center",
     marginBottom: 24,
+    width: 70,
+    alignSelf: 'center',
   },
   continueButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
   },
   orText: {

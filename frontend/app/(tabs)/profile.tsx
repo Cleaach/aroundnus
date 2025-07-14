@@ -17,6 +17,7 @@ import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 export default function ProfileScreen() {
   const [user, setUser] = useState<User | null>(null);
   const [profileImage, setProfileImage] = useState<string | undefined>(undefined);
+  const [displayName, setDisplayName] = useState<string | undefined>(undefined);
   const [refreshFlag, setRefreshFlag] = useState(false); // trigger profile refresh
   const [refreshing, setRefreshing] = useState(false); // for pull-to-refresh
 
@@ -52,6 +53,7 @@ export default function ProfileScreen() {
       } else {
         const data = await response.json();
         setProfileImage(data.profilePicture);
+        setDisplayName(data.displayName);
       }
     } catch (err) {
       console.log("Failed to fetch profile:", err);
@@ -198,7 +200,7 @@ export default function ProfileScreen() {
                 style={styles.profileImage}
               />
             </TouchableOpacity>
-            <Text style={styles.welcomeText}>Welcome, {user.email}</Text>
+            <Text style={styles.welcomeText}>Welcome, {displayName || user.email}</Text>
             <TouchableOpacity
               style={styles.signOutButton}
               onPress={handleSignOut}

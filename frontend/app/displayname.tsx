@@ -75,7 +75,7 @@ export default function DisplayNameScreen() {
             />
             {error ? <Text style={styles.error}>{error}</Text> : null}
             <TouchableOpacity style={styles.continueButton} onPress={handleContinue} disabled={isLoading}>
-              {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.continueButtonText}>Continue</Text>}
+              {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.continueButtonText}>Go</Text>}
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
@@ -129,7 +129,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     marginBottom: 24,
-    width: '100%',
+    width: 70,
+    alignSelf: 'center',
   },
   continueButtonText: {
     color: '#FFFFFF',

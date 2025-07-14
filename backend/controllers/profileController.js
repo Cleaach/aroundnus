@@ -15,6 +15,7 @@ const getProfileData = async (req, res) => {
     res.status(200).json({
       email: userData.email,
       profilePicture: userData.profilePicture,
+      displayName: userData.displayName || null,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
