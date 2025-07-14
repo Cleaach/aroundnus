@@ -71,4 +71,19 @@ const updateProfilePicture = async (req, res) => {
   }
 };
 
-module.exports = { updateProfilePicture, getProfileData };
+const updateDisplayName = async (req, res) => {
+  const { uid } = req.user;
+  const { displayName } = req.body;
+  if (!displayName || typeof displayName !== 'string' || !displayName.trim()) {
+    return res.status(400).json({ error: 'Invalid display name' });
+  }
+  try {
+    const userRef = admin.firestore().collection('users').doc(uid);
+    await userRef.update({ displayName: displayName.trim() });
+    res.status(200).json({ message: 'Display name updated', displayName: displayName.trim() });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { updateProfilePicture, getProfileData, updateDisplayName };

@@ -19,7 +19,17 @@ export default function DisplayNameScreen() {
       return;
     }
     if (!email || !password) {
-      setError('Missing email or password.');
+      setError('Missing email or password. Please go back and try again.');
+      Alert.alert('Error', 'Missing email or password. Please go back and try again.');
+      return;
+    }
+    // Extra validation for email and password
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.');
       return;
     }
     setError('');

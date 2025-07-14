@@ -48,29 +48,32 @@ export default function SignInScreen() {
       Alert.alert("Error", "Please enter a valid email and password");
       return;
     }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(cleanEmail)) {
+      Alert.alert("Error", "Please enter a valid email address.");
+      return;
+    }
+    if (password.length < 6) {
+      Alert.alert("Error", "Password must be at least 6 characters.");
+      return;
+    }
+    // Log values for debugging
     setIsLoading(true);
     try {
-      const methods = await fetchSignInMethodsForEmail(auth, cleanEmail);
-      if (methods.length === 0) {
-        // New user, go to displayname page with email and password
+      await signInWithEmailAndPassword(auth, cleanEmail, password);
+      setEmail("");
+      setPassword("");
+      setIsLoading(false);
+      router.replace('/(tabs)');
+      return;
+    } catch (signInError: any) {
+      if (signInError.code === 'auth/user-not-found') {
         setIsLoading(false);
         router.replace({ pathname: '/displayname', params: { email: cleanEmail, password } });
         return;
-      } else if (methods.includes("password")) {
-        // Existing user, sign in
-        await signInWithEmailAndPassword(auth, cleanEmail, password);
-        setEmail("");
-        setPassword("");
-      } else {
-        Alert.alert("Error", "This email is registered with a different sign-in method (e.g., Google or Apple). Please use that method to sign in.");
-      }
-    } catch (error: any) {
-      if (error.code === 'auth/wrong-password') {
+      } else if (signInError.code === 'auth/wrong-password') {
         Alert.alert("Error", "Incorrect password. Please try again.");
-      } else if (error.code === 'auth/user-not-found') {
-        Alert.alert("Error", "No user found with this email.");
       } else {
-        Alert.alert("Error", error.message || "An error occurred");
+        Alert.alert("Error", "arrived here" + signInError.message || "An error occurred");
       }
     } finally {
       setIsLoading(false);
@@ -231,29 +234,6 @@ const styles = StyleSheet.create({
     color: "#666666",
     fontSize: 16,
     marginBottom: 24,
-  },
-  socialButton: {
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-    borderRadius: 8,
-    paddingVertical: 16,
-    alignItems: "center",
-    marginBottom: 12,
-    backgroundColor: "#FFFFFF",
-  },
-  socialButtonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  socialIcon: {
-    marginRight: 8,
-    fontSize: 16,
-  },
-  socialButtonText: {
-    color: "#000000",
-    fontSize: 16,
-    fontWeight: "500",
   },
   footer: {
     paddingBottom: 40,

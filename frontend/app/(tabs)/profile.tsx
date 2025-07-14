@@ -10,6 +10,8 @@ import {
   Image,
   ScrollView,
   RefreshControl,
+  TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { auth } from "../../firebase";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
@@ -20,6 +22,9 @@ export default function ProfileScreen() {
   const [displayName, setDisplayName] = useState<string | undefined>(undefined);
   const [refreshFlag, setRefreshFlag] = useState(false); // trigger profile refresh
   const [refreshing, setRefreshing] = useState(false); // for pull-to-refresh
+  const [editingDisplayName, setEditingDisplayName] = useState(false);
+  const [newDisplayName, setNewDisplayName] = useState<string>("");
+  const [savingDisplayName, setSavingDisplayName] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -38,7 +43,7 @@ export default function ProfileScreen() {
       }
       const token = await currentUser.getIdToken();
       const response = await fetch(
-        'https://aroundnus.onrender.com/api/profilePicture/data',
+        'https://aroundnus.onrender.com/api/profile/get-profile-data',
         {
           method: 'GET',
           headers: {
@@ -79,7 +84,7 @@ export default function ProfileScreen() {
         type: type || 'image/jpeg',
         name: fileName || 'profile.jpg',
       } as any);
-      const response = await fetch('https://aroundnus.onrender.com/api/profilePicture/update', {
+      const response = await fetch('https://aroundnus.onrender.com/api/profile/update-profile-picture', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -173,6 +178,44 @@ export default function ProfileScreen() {
     showMessage();
   };
 
+  const handleSaveDisplayName = async () => {
+    if (!newDisplayName.trim()) {
+      Alert.alert("Error", "Display name cannot be empty.");
+      return;
+    }
+    setSavingDisplayName(true);
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        Alert.alert("Error", "No user logged in");
+        setSavingDisplayName(false);
+        return;
+      }
+      const token = await currentUser.getIdToken();
+      const response = await fetch('https://aroundnus.onrender.com/api/profile/update-displayname', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ displayName: newDisplayName.trim() }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        Alert.alert("Error", error.error || "Failed to update display name");
+      } else {
+        setDisplayName(newDisplayName.trim());
+        setEditingDisplayName(false);
+        setNewDisplayName("");
+        Alert.alert("Success", "Display name updated!");
+      }
+    } catch (err) {
+      Alert.alert("Error", "Failed to update display name");
+    } finally {
+      setSavingDisplayName(false);
+    }
+  };
+
   // Pull-to-refresh handler
   const onRefresh = async () => {
     setRefreshing(true);
@@ -201,6 +244,50 @@ export default function ProfileScreen() {
               />
             </TouchableOpacity>
             <Text style={styles.welcomeText}>Welcome, {displayName || user.email}</Text>
+            {editingDisplayName ? (
+              <View style={{ width: '100%', alignItems: 'center', marginBottom: 16 }}>
+                <TextInput
+                  style={{
+                    borderWidth: 1,
+                    borderColor: '#E0E0E0',
+                    borderRadius: 8,
+                    paddingHorizontal: 16,
+                    paddingVertical: 5,
+                    fontSize: 16,
+                    backgroundColor: '#FAFAFA',
+                    height: 48,
+                    width: '100%',
+                    marginBottom: 8,
+                  }}
+                  placeholder="New display name"
+                  value={newDisplayName}
+                  onChangeText={setNewDisplayName}
+                  autoCapitalize="words"
+                  editable={!savingDisplayName}
+                />
+                <TouchableOpacity
+                  style={{ backgroundColor: '#000', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, alignItems: 'center', width: 120 }}
+                  onPress={handleSaveDisplayName}
+                  disabled={savingDisplayName}
+                >
+                  {savingDisplayName ? <ActivityIndicator color="#fff" /> : <Text style={{ color: '#fff', fontWeight: '600' }}>Save</Text>}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ marginTop: 8 }}
+                  onPress={() => { setEditingDisplayName(false); setNewDisplayName(""); }}
+                  disabled={savingDisplayName}
+                >
+                  <Text style={{ color: '#666' }}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={{ backgroundColor: '#eee', borderRadius: 8, paddingVertical: 8, paddingHorizontal: 16, alignItems: 'center', marginBottom: 16 }}
+                onPress={() => { setEditingDisplayName(true); setNewDisplayName(displayName || ""); }}
+              >
+                <Text style={{ color: '#000' }}>Edit Display Name</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={styles.signOutButton}
               onPress={handleSignOut}
