@@ -1,8 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
-import UnityView from '@azesmway/react-native-unity';
+import UnityView, { UnityViewType } from '@azesmway/react-native-unity';
 import { useRouter } from 'expo-router';
 import { NativeSyntheticEvent } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 
 // interface IMessage {
 //   gameObject: string;
@@ -11,7 +12,8 @@ import { NativeSyntheticEvent } from 'react-native';
 // }
 
 const UnityScreen = () => {
-  const unityRef = useRef<React.ElementRef<typeof UnityView>>(null);
+  const { destination } = useLocalSearchParams();
+  const unityRef = useRef<React.ElementRef<typeof UnityViewType>>(null);
   const router = useRouter();
   const [isUnityVisible, setIsUnityVisible] = useState(true);
 
@@ -62,23 +64,16 @@ const UnityScreen = () => {
     }, 500);
   };
 
-  // Example of sending a message to Unity after a delay
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     if (unityRef?.current) {
-  //       const message: IMessage = {
-  //         gameObject: 'gameObject',
-  //         methodName: 'methodName',
-  //         message: 'Hello from React Native!',
-  //       };
-  //       unityRef.current.postMessage(
-  //         message.gameObject,
-  //         message.methodName,
-  //         message.message
-  //       );
-  //     }
-  //   }, 3000);
-  // }, []);
+  useEffect(() => {
+    if (destination && unityRef.current) {
+      // Send the destination to Unity
+      unityRef.current.postMessage(
+        'NavigationController', // GameObject name in Unity
+        'SetDestination',       // Method name in Unity script
+        destination             // The destination string
+      );
+    }
+  }, [destination]);
 
   return (
     <View style={{ flex: 1 }}>

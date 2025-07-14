@@ -9,7 +9,8 @@ public class AugmentedSpace : MonoBehaviour
     public string title;
 
     // POIs inside this space
-    POI[] pois = { };
+    [Tooltip("POIs inside this space")]
+    public POI[] pois = { };
 
     [Tooltip("Parent of the POIs inside this space")]
     public GameObject augmentation;
@@ -24,4 +25,7 @@ public class AugmentedSpace : MonoBehaviour
     {
         return pois;
     }
+
+    // Optional: public property for access
+    public POI[] Pois => pois;
 }

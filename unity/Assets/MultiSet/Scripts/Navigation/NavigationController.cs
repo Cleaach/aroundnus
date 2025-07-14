@@ -120,4 +120,33 @@ public class NavigationController : MonoBehaviour
     {
         agent.gameObject.GetComponent<MeshRenderer>().enabled = !agent.gameObject.GetComponent<MeshRenderer>().enabled;
     }
+
+    public void SetDestination(string destinationName)
+    {
+        Debug.Log("SetDestination called with: " + destinationName);
+
+        // Find the POI by name in the augmentedSpace
+        POI foundPOI = null;
+        if (augmentedSpace != null && augmentedSpace.pois != null)
+        {
+            foreach (var poi in augmentedSpace.pois)
+            {
+                if (poi != null && poi.name == destinationName)
+                {
+                    foundPOI = poi;
+                    break;
+                }
+            }
+        }
+
+        if (foundPOI != null)
+        {
+            SetPOIForNavigation(foundPOI);
+            Debug.Log("Destination set to: " + foundPOI.name);
+        }
+        else
+        {
+            Debug.LogWarning("POI not found: " + destinationName);
+        }
+    }
 }

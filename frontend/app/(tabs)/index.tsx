@@ -23,15 +23,10 @@ type LocationType = {
 } | null;
 
 const dummyDestinations = [
-  "UTown",
-  "COM1",
-  "COM2",
-  "YIH",
-  "Central Library",
-  "PGP",
-  "NUH",
-  "Science Canteen",
-  "Business School",
+  "Operating theatre",
+  "ICU",
+  "Pharmacy",
+  "Brönnimanns"
 ];
 
 export default function HomeScreen() {
@@ -86,8 +81,12 @@ export default function HomeScreen() {
   };
 
   const handleNavigate = () => {
-    console.log('Navigate button pressed, attempting to navigate to Unity modal');
-    router.navigate('/(modals)/unity');
+    if (selectedDestination) {
+      router.navigate({
+        pathname: '/(modals)/unity',
+        params: { destination: selectedDestination }
+      });
+    }
   };
 
   const isWeb = Platform.OS === "web";
