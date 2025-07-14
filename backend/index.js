@@ -1,7 +1,7 @@
 const express = require('express');
 const savedLocationsRoutes = require('./routes/savedLocationsRoutes');
 const authRoutes = require('./routes/authRoutes');
-const profilePictureRoutes = require('./routes/profileRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 const cors = require('cors');
 
 const app = express();
@@ -17,7 +17,7 @@ app.use(cors({
 // routes
 app.use('/api/savedLocations', savedLocationsRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/profilePicture', profilePictureRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Catch-all 404 handler for unknown routes
 app.use((req, res) => {

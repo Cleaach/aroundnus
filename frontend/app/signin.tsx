@@ -56,7 +56,6 @@ export default function SignInScreen() {
       Alert.alert("Error", "Password must be at least 6 characters.");
       return;
     }
-    // Log values for debugging
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, cleanEmail, password);
