@@ -48,6 +48,7 @@ export default function RootLayout() {
       const inAuthGroup = segments[0] === '(tabs)';
       const inModalGroup = segments[0] === '(modals)';
       const inSigninPage = segments[0] === 'signin';
+      const inDisplayNamePage = segments[0] === 'displayname';
       
       if (!user && (inAuthGroup || inModalGroup)) {
         // Redirect to sign in if not signed in and trying to access protected routes
@@ -56,6 +57,7 @@ export default function RootLayout() {
         // Redirect to main app if signed in and on signin page
         router.replace('/(tabs)');
       }
+      // Do NOT redirect away from /displayname if signed in
     }
   }, [user, segments, isAuthLoading]);
 
@@ -79,6 +81,7 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="signin" options={{ headerShown: false }} />
+        <Stack.Screen name="displayname" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(modals)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />

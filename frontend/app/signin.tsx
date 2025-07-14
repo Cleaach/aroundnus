@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { useRouter } from 'expo-router';
 import {
   Alert,
   StyleSheet,
@@ -9,149 +10,148 @@ import {
   SafeAreaView,
   StatusBar,
   ActivityIndicator,
+  Animated,
+  Easing,
 } from "react-native";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
 import { auth } from "../firebase";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function SignInScreen() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+  const [showPasswordInput, setShowPasswordInput] = useState(false);
+  const passwordAnim = useRef(new Animated.Value(0)).current;
+
+  const handleEmailArrowPress = () => {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail) {
+      Alert.alert("Error", "Please enter a valid email");
+      return;
+    }
+    setShowPasswordInput(true);
+    Animated.timing(passwordAnim, {
+      toValue: 1,
+      duration: 600,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }).start();
+  };
 
   const handleEmailSubmit = async () => {
-    if (!email.trim() || !password.trim()) {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail || !password.trim()) {
       Alert.alert("Error", "Please enter a valid email and password");
       return;
     }
     setIsLoading(true);
     try {
-      if (isCreatingAccount) {
-        await createUserWithEmailAndPassword(auth, email, password);
-        Alert.alert("Success", "Account created!");
+      const methods = await fetchSignInMethodsForEmail(auth, cleanEmail);
+      if (methods.length === 0) {
+        // New user, go to displayname page with email and password
+        setIsLoading(false);
+        router.replace({ pathname: '/displayname', params: { email: cleanEmail, password } });
+        return;
+      } else if (methods.includes("password")) {
+        // Existing user, sign in
+        await signInWithEmailAndPassword(auth, cleanEmail, password);
+        setEmail("");
+        setPassword("");
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
-      }
-      setEmail("");
-      setPassword("");
-      const user = auth.currentUser;
-      if (user) {
-        const token = await user.getIdToken();
-        await fetch('https://aroundnus.onrender.com/api/auth/init-user-doc', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email,
-            displayName: user.displayName,
-          }),
-        });
+        Alert.alert("Error", "This email is registered with a different sign-in method (e.g., Google or Apple). Please use that method to sign in.");
       }
     } catch (error: any) {
-      Alert.alert("Error", error.message || "An error occurred");
-      console.error(error);
+      if (error.code === 'auth/wrong-password') {
+        Alert.alert("Error", "Incorrect password. Please try again.");
+      } else if (error.code === 'auth/user-not-found') {
+        Alert.alert("Error", "No user found with this email.");
+      } else {
+        Alert.alert("Error", error.message || "An error occurred");
+      }
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGoogleSignIn = () => {
-    Alert.alert("Google Sign In", "Google Sign In is disabled in Expo Go");
-  };
-
-  const handleAppleSignIn = () => {
-    Alert.alert("Apple Sign In", "Apple Sign In not implemented yet");
   };
 
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       <SafeAreaView style={styles.container}>
-        <View style={styles.content}>
-          <Text style={styles.title}>Sign In</Text>
-
+        <Text style={styles.title}>Welcome</Text>
+        <View style={styles.centeredContent}>
           <View style={styles.formSection}>
-            <Text style={styles.subtitle}>
-              {isCreatingAccount ? "Create an account" : "Welcome back"}
-            </Text>
-            <Text style={styles.description}>
-              Enter your email to {isCreatingAccount ? "sign up for" : "sign in to"} this app
-            </Text>
+            <Text style={styles.description}>Enter your email to sign in to ARoundNUS</Text>
 
-            <TextInput
-              style={styles.emailInput}
-              placeholder="email@domain.com"
-              placeholderTextColor="#666666"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-            <TextInput
-              style={styles.emailInput}
-              placeholder="Password"
-              placeholderTextColor="#666666"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-              autoComplete="password"
-            />
-
-            <TouchableOpacity
-              style={styles.continueButton}
-              onPress={handleEmailSubmit}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text style={styles.continueButtonText}>Continue</Text>
+            {/* Email input with arrow button */}
+            <View style={styles.emailRow}>
+              <TextInput
+                style={[styles.emailInput, { flex: 1, marginBottom: 0 }]}
+                placeholder="email@domain.com"
+                placeholderTextColor="#666666"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                returnKeyType="done"
+                onSubmitEditing={handleEmailArrowPress}
+              />
+              {!showPasswordInput && (
+                <TouchableOpacity
+                  style={styles.arrowButton}
+                  onPress={handleEmailArrowPress}
+                  disabled={isLoading || !email.trim()}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="chevron-forward" size={28} color="#fff" />
+                </TouchableOpacity>
               )}
-            </TouchableOpacity>
+            </View>
 
-            <Text style={styles.orText}>or</Text>
+            {/* Password input and continue button only show after arrow is pressed, with animation */}
+            {showPasswordInput && (
+              <Animated.View
+                style={{
+                  opacity: passwordAnim,
+                  transform: [
+                    {
+                      translateY: passwordAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [30, 0],
+                      }),
+                    },
+                  ],
+                }}
+              >
+                <TextInput
+                  style={styles.emailInput}
+                  placeholder="Password"
+                  placeholderTextColor="#666666"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  autoCapitalize="none"
+                  autoComplete="password"
+                />
+                <TouchableOpacity
+                  style={[styles.continueButton, { marginTop: 16 }]}
+                  onPress={handleEmailSubmit}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <ActivityIndicator color="white" />
+                  ) : (
+                    <Text style={styles.continueButtonText}>Continue</Text>
+                  )}
+                </TouchableOpacity>
+              </Animated.View>
+            )}
 
-            <TouchableOpacity
-              style={styles.socialButton}
-              onPress={handleGoogleSignIn}
-              disabled={isLoading}
-            >
-              <View style={styles.socialButtonContent}>
-                <Text style={styles.socialButtonText}>
-                  <Text style={styles.socialIcon}>G</Text> Continue with Google
-                </Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.socialButton}
-              onPress={handleAppleSignIn}
-              disabled={isLoading}
-            >
-              <View style={styles.socialButtonContent}>
-                <Text style={styles.socialButtonText}>
-                  <Text style={styles.socialIcon}>🍎</Text> Continue with Apple
-                </Text>
-              </View>
-            </TouchableOpacity>
           </View>
 
-          <View style={styles.footer}>
-            <TouchableOpacity
-              style={styles.toggleButton}
-              onPress={() => setIsCreatingAccount(!isCreatingAccount)}
-            >
-              <Text style={styles.toggleButtonText}>
-                {isCreatingAccount
-                  ? "Already have an account? Sign In"
-                  : "Don't have an account? Create one"}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          {/* No toggle needed, flow is automatic */}
         </View>
       </SafeAreaView>
     </>
@@ -163,21 +163,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
-  content: {
+  centeredContent: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
     paddingHorizontal: 24,
-    justifyContent: "space-between",
+    marginTop: -40,
   },
   title: {
     fontSize: 32,
     fontWeight: "600",
     color: "#000000",
     marginTop: 60,
-    marginBottom: 40,
+    marginBottom: 24,
     textAlign: "center",
   },
   formSection: {
-    flex: 1,
+    width: '100%',
+    alignItems: 'stretch',
   },
   subtitle: {
     fontSize: 18,
@@ -189,7 +193,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     color: "#666666",
-    marginBottom: 32,
+    marginBottom: 20,
     lineHeight: 22,
     textAlign: "center",
   },
@@ -198,10 +202,11 @@ const styles = StyleSheet.create({
     borderColor: "#E0E0E0",
     borderRadius: 8,
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 5,
     fontSize: 16,
-    marginBottom: 16,
     backgroundColor: "#FAFAFA",
+    height: 48,
+    width: '100%',
   },
   continueButton: {
     backgroundColor: "#000000",
@@ -255,5 +260,21 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     fontSize: 16,
     fontWeight: "500",
+  },
+  emailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    height: 48,
+  },
+  arrowButton: {
+    marginLeft: 8,
+    backgroundColor: '#000',
+    borderRadius: 8,
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 0,
   },
 }); 

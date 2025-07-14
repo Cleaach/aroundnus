@@ -24,6 +24,7 @@ const loginUser = async (req, res) => {
 const initUserDoc = async (req, res) => {
     try {
         const { uid, email } = req.user;
+        const displayName = req.body.displayName || "";
 
         const userRef = admin.firestore().collection('users').doc(uid);
         const userDoc = await userRef.get();
@@ -32,6 +33,7 @@ const initUserDoc = async (req, res) => {
             const userTemplate = {
                 bookmarkedLocations: [],
                 email: email,
+                displayName: displayName,
                 friendRequests: {
                     received: [],
                     sent: [],
