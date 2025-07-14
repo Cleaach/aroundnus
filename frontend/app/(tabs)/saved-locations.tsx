@@ -150,7 +150,7 @@ export default function SavedLocationsScreen() {
           onChangeText={setNewLocation}
         />
         <TouchableOpacity style={styles.addButton} onPress={handleAdd} disabled={loading}>
-          <Text style={styles.addButtonText}>Add</Text>
+          <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>
       </View>
       {error ? <Text style={styles.error}>{error}</Text> : null}
