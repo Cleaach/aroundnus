@@ -200,6 +200,11 @@ export default function ProfileScreen() {
         },
         body: JSON.stringify({ displayName: newDisplayName.trim() }),
       });
+      if (response.status === 409) {
+        Alert.alert("Error", "Display name already taken. Please choose another.");
+        setSavingDisplayName(false);
+        return;
+      }
       if (!response.ok) {
         const error = await response.json();
         Alert.alert("Error", error.error || "Failed to update display name");

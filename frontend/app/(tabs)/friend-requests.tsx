@@ -167,7 +167,7 @@ export default function FriendRequestsScreen() {
         source={{ uri: item.profilePicture || DEFAULT_AVATAR }}
         style={styles.avatar}
       />
-      <Text style={styles.userText}>{item.displayName} ({item.uid})</Text>
+      <Text style={styles.userText}>{item.displayName}</Text>
       {rightContent}
     </View>
   );

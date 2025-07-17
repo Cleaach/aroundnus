@@ -79,7 +79,23 @@ const updateDisplayName = async (req, res) => {
     return res.status(400).json({ error: 'Invalid display name' });
   }
   try {
-    const userRef = admin.firestore().collection('users').doc(uid);
+    // Check uniqueness (case-insensitive)
+    const usersRef = admin.firestore().collection('users');
+    const snapshot = await usersRef.get();
+    const lowerDisplayName = displayName.trim().toLowerCase();
+    let taken = false;
+    snapshot.forEach(doc => {
+      if (doc.id !== uid) {
+        const data = doc.data();
+        if (data.displayName && data.displayName.toLowerCase() === lowerDisplayName) {
+          taken = true;
+        }
+      }
+    });
+    if (taken) {
+      return res.status(409).json({ error: 'Display name already taken' });
+    }
+    const userRef = usersRef.doc(uid);
     await userRef.update({ displayName: displayName.trim() });
     res.status(200).json({ message: 'Display name updated', displayName: displayName.trim() });
   } catch (err) {
