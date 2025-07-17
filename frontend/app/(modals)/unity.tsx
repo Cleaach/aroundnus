@@ -16,40 +16,18 @@ const UnityScreen = () => {
   const unityRef = useRef<React.ElementRef<typeof UnityViewType>>(null);
   const router = useRouter();
   const [isUnityVisible, setIsUnityVisible] = useState(true);
+  const [unityKey, setUnityKey] = useState(0);
 
-  // Cleanup Unity when component unmounts
-  useEffect(() => {
-    return () => {
-      terminateUnity();
-    };
-  }, []);
+
 
   const terminateUnity = () => {
-    if (unityRef.current) {
-      try {
-        const unityInstance = unityRef.current as any;
-        
-        // Try to pause Unity first
-        if (unityInstance && typeof unityInstance.pause === 'function') {
-          unityInstance.pause();
-        }
-        
-        // Try to unload Unity
-        if (unityInstance && typeof unityInstance.unload === 'function') {
-          unityInstance.unload();
-        }
-        
-        // Try to destroy Unity
-        if (unityInstance && typeof unityInstance.destroy === 'function') {
-          unityInstance.destroy();
-        }
-        
-        console.log('Unity terminated successfully');
-      } catch (error) {
-        console.log('Unity termination error:', error);
-      }
-    }
+    (unityRef.current as any)?.postMessage(
+      'NavigationController',
+      'ArrivedAtDestination'
+    );
     setIsUnityVisible(false);
+    console.log("THIS SHIT DONE");
+    setUnityKey(prev => prev + 1); // Force remount next time
   };
 
   const handleBack = () => {
@@ -61,17 +39,17 @@ const UnityScreen = () => {
     // Wait longer for Unity to fully terminate
     setTimeout(() => {
       router.back();
-    }, 500);
+    }, 3000);
   };
 
   useEffect(() => {
     if (destination && unityRef.current) {
-      // Send the destination to Unity
-      unityRef.current.postMessage(
-        'NavigationController', // GameObject name in Unity
-        'SetDestination',       // Method name in Unity script
-        destination             // The destination string
+      (unityRef.current as any)?.postMessage(
+        'NavigationController',
+        'StartNavigationToPOI',
+        destination
       );
+      console.log("MARI KITA KE " + destination)
     }
   }, [destination]);
 
@@ -95,6 +73,7 @@ const UnityScreen = () => {
       
       {isUnityVisible && (
         <UnityView
+          key={unityKey}
           ref={unityRef}
           style={{ flex: 1 }}
           onUnityMessage={(result: NativeSyntheticEvent<{ message: string }>) => {
