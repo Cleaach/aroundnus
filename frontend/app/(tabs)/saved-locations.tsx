@@ -14,12 +14,19 @@ import {
 import { auth } from '../../firebase';
 import { FontAwesome } from '@expo/vector-icons';
 import { v4 as uuidv4 } from 'uuid';
+import { useRouter } from 'expo-router';
 
-// Define the type for a saved location
 interface SavedLocation {
   id?: string;
   name: string;
 }
+
+const allowedLocations = [
+  "Operating theatre",
+  "ICU",
+  "Pharmacy",
+  "Brönnimanns"
+];
 
 export default function SavedLocationsScreen() {
   const [locations, setLocations] = useState<SavedLocation[]>([]);
@@ -29,6 +36,8 @@ export default function SavedLocationsScreen() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const router = useRouter();
 
   const fetchLocations = useCallback(async () => {
     setLoading(true);
@@ -67,13 +76,16 @@ export default function SavedLocationsScreen() {
 
   const handleAdd = async () => {
     if (!newLocation.trim()) return;
+    if (!allowedLocations.includes(newLocation)) {
+      setError('Please select a valid location from the list.');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
       const user = auth.currentUser;
       if (!user) throw new Error('Not logged in');
       const token = await user.getIdToken();
-      // Generate a unique id for the new location
       const locationToAdd = { id: uuidv4(), name: newLocation };
       const res = await fetch('https://aroundnus.onrender.com/api/savedLocations/add', {
         method: 'POST',
@@ -85,12 +97,26 @@ export default function SavedLocationsScreen() {
       });
       if (!res.ok) throw new Error('Failed to add location');
       setNewLocation('');
+      setSuggestions([]);
       fetchLocations();
     } catch (e) {
       setError((e as Error).message || 'Error adding location');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Suggestion logic for add input
+  const handleAddInputChange = (text: string) => {
+    setNewLocation(text);
+    if (!text) {
+      setSuggestions([]);
+      return;
+    }
+    const matches = allowedLocations.filter((loc) =>
+      loc.toLowerCase().includes(text.toLowerCase())
+    );
+    setSuggestions(matches);
   };
 
   const handleDelete = async (location: SavedLocation) => {
@@ -147,12 +173,31 @@ export default function SavedLocationsScreen() {
           style={styles.addInput}
           placeholder="Add new location..."
           value={newLocation}
-          onChangeText={setNewLocation}
+          onChangeText={handleAddInputChange}
         />
-        <TouchableOpacity style={styles.addButton} onPress={handleAdd} disabled={loading}>
+        <TouchableOpacity style={styles.addButton} onPress={handleAdd} disabled={loading || !allowedLocations.includes(newLocation)}>
           <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>
       </View>
+      {newLocation.length > 0 && suggestions.length > 0 && (
+        <View style={[styles.suggestionContainer, { marginHorizontal: 16, marginBottom: 8 }]}>
+          <FlatList
+            data={suggestions}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.suggestionItem}
+                onPress={() => {
+                  setNewLocation(item);
+                  setSuggestions([]);
+                }}
+              >
+                <Text>{item}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      )}
       {error ? <Text style={styles.error}>{error}</Text> : null}
       {loading && !refreshing ? <ActivityIndicator style={{ margin: 20 }} /> : null}
       <FlatList
@@ -161,9 +206,17 @@ export default function SavedLocationsScreen() {
         renderItem={({ item }) => (
           <View style={styles.locationRow}>
             <Text style={styles.locationName}>{item.name}</Text>
-            <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item)}>
-              <FontAwesome name="trash" size={20} color="#666" />
-            </TouchableOpacity>
+            <View style={styles.locationActions}>
+              <TouchableOpacity
+                style={styles.unityButton}
+                onPress={() => router.navigate({ pathname: '/(modals)/unity', params: { destination: item.name } })}
+              >
+                <FontAwesome name="location-arrow" size={20} color="#007AFF" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item)}>
+                <FontAwesome name="trash" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
           </View>
         )}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
@@ -174,22 +227,105 @@ export default function SavedLocationsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  header: { alignItems: 'center', marginTop: 20, marginBottom: 10 },
-  title: { fontSize: 24, fontWeight: 'bold' },
-  searchRow: { flexDirection: 'row', paddingHorizontal: 16, marginBottom: 8 },
-  searchInput: { flex: 1, backgroundColor: '#f0f0f0', borderRadius: 8, padding: 10 },
-  addRow: { flexDirection: 'row', paddingHorizontal: 16, marginBottom: 8 },
-  addInput: { flex: 1, backgroundColor: '#f0f0f0', borderRadius: 8, padding: 10 },
-  addButton: { marginLeft: 8, backgroundColor: '#007AFF', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 16, justifyContent: 'center' },
-  addButtonText: { color: '#fff', fontWeight: 'bold' },
-  error: { color: 'red', textAlign: 'center', marginBottom: 8 },
-  locationRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#eee' },
-  locationName: { fontSize: 16 },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  searchRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  searchInput: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    padding: 10,
+  },
+  addRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  addInput: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    padding: 10,
+  },
+  addButton: {
+    marginLeft: 8,
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    justifyContent: 'center',
+  },
+  addButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  locationName: {
+    fontSize: 16,
+  },
+  locationActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  unityButton: {
+    marginRight: 8,
+    padding: 6,
+    borderRadius: 6,
+    backgroundColor: '#e6f0ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   deleteButton: {
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
-  deleteButtonText: { color: '#fff', fontWeight: 'bold' },
-  empty: { textAlign: 'center', color: '#999', marginTop: 40 },
+  deleteButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  empty: {
+    textAlign: 'center',
+    color: '#999',
+    marginTop: 40,
+  },
+  suggestionContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    maxHeight: 150,
+    overflow: 'hidden',
+  },
+  suggestionItem: {
+    padding: 12,
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+  },
 }); 
