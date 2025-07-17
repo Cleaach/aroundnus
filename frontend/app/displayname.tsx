@@ -41,7 +41,7 @@ export default function DisplayNameScreen() {
       if (user) {
         const token = await user.getIdToken();
         // Call backend to create user doc with display name
-        await fetch('https://aroundnus.onrender.com/api/auth/init-user-doc', {
+        const response = await fetch('https://aroundnus.onrender.com/api/auth/init-user-doc', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -52,6 +52,21 @@ export default function DisplayNameScreen() {
             displayName,
           }),
         });
+        if (response.status === 409) {
+          setError('Display name already taken. Please choose another.');
+          // Delete the Firebase user that was just created
+          if (user) {
+            await user.delete();
+          }
+          setIsLoading(false);
+          return;
+        }
+        if (!response.ok) {
+          const error = await response.json();
+          setError(error.error || 'An error occurred');
+          setIsLoading(false);
+          return;
+        }
       }
       router.replace('/(tabs)');
     } catch (err: any) {

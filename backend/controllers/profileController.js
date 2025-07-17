@@ -78,27 +78,36 @@ const updateDisplayName = async (req, res) => {
   if (!displayName || typeof displayName !== 'string' || !displayName.trim()) {
     return res.status(400).json({ error: 'Invalid display name' });
   }
+  const db = admin.firestore();
+  const userRef = db.collection('users').doc(uid);
+  const newDisplayNameIndexRef = db.collection('displayNameIndex').doc(displayName.trim().toLowerCase());
+
   try {
-    // Check uniqueness (case-insensitive)
-    const usersRef = admin.firestore().collection('users');
-    const snapshot = await usersRef.get();
-    const lowerDisplayName = displayName.trim().toLowerCase();
-    let taken = false;
-    snapshot.forEach(doc => {
-      if (doc.id !== uid) {
-        const data = doc.data();
-        if (data.displayName && data.displayName.toLowerCase() === lowerDisplayName) {
-          taken = true;
-        }
+    await db.runTransaction(async (transaction) => {
+      const userDoc = await transaction.get(userRef);
+      if (!userDoc.exists) throw new Error('User not found');
+      const oldDisplayName = userDoc.data().displayName || '';
+      const oldDisplayNameIndexRef = db.collection('displayNameIndex').doc(oldDisplayName.trim().toLowerCase());
+      if (displayName.trim().toLowerCase() !== oldDisplayName.trim().toLowerCase()) {
+        // Check if new display name is taken
+        const newDisplayNameDoc = await transaction.get(newDisplayNameIndexRef);
+        if (newDisplayNameDoc.exists) throw new Error('Display name already taken');
+        // Remove old index if it exists
+        if (oldDisplayName) transaction.delete(oldDisplayNameIndexRef);
+        // Set new index
+        transaction.set(newDisplayNameIndexRef, { uid });
       }
+      // Update user document
+      transaction.update(userRef, { displayName: displayName.trim() });
     });
-    if (taken) {
-      return res.status(409).json({ error: 'Display name already taken' });
-    }
-    const userRef = usersRef.doc(uid);
-    await userRef.update({ displayName: displayName.trim() });
     res.status(200).json({ message: 'Display name updated', displayName: displayName.trim() });
   } catch (err) {
+    if (err.message === 'Display name already taken') {
+      return res.status(409).json({ error: 'Display name already taken' });
+    }
+    if (err.message === 'User not found') {
+      return res.status(404).json({ error: 'User not found' });
+    }
     res.status(500).json({ error: err.message });
   }
 };

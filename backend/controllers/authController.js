@@ -25,28 +25,42 @@ const initUserDoc = async (req, res) => {
     try {
         const { uid, email } = req.user;
         const displayName = req.body.displayName || "";
+        const db = admin.firestore();
+        const userRef = db.collection('users').doc(uid);
+        const displayNameIndexRef = db.collection('displayNameIndex').doc(displayName.trim().toLowerCase());
 
-        const userRef = admin.firestore().collection('users').doc(uid);
-        const userDoc = await userRef.get();
-
-        if (!userDoc.exists) {
-            const userTemplate = {
+        await db.runTransaction(async (transaction) => {
+            const userDoc = await transaction.get(userRef);
+            if (userDoc.exists) {
+                throw new Error('User document already exists');
+            }
+            if (displayName) {
+                const displayNameDoc = await transaction.get(displayNameIndexRef);
+                if (displayNameDoc.exists) {
+                    throw new Error('Display name already taken');
+                }
+                // Reserve the display name
+                transaction.set(displayNameIndexRef, { uid });
+            }
+            // Create the user document
+            transaction.set(userRef, {
                 bookmarkedLocations: [],
                 email: email,
                 displayName: displayName,
-                friendRequests: {
-                    received: [],
-                    sent: [],
-                },
+                friendRequests: { received: [], sent: [] },
                 friends: [],
                 sharedLocation: [],
-            };
-            await userRef.set(userTemplate);
-            return res.status(201).json({ message: "User document created", user: userTemplate });
-        } else {
+            });
+        });
+
+        return res.status(201).json({ message: "User document created" });
+    } catch (err) {
+        if (err.message === 'Display name already taken') {
+            return res.status(409).json({ error: 'Display name already taken' });
+        }
+        if (err.message === 'User document already exists') {
             return res.status(200).json({ message: "User document already exists" });
         }
-    } catch (err) {
         return res.status(500).json({ error: err.message });
     }
 };

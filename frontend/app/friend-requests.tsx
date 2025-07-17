@@ -60,6 +60,15 @@ export default function FriendRequestsScreen() {
     }
   };
 
+  useEffect(() => {
+    if (searchName.trim()) {
+      handleSearch();
+    } else {
+      setSearchResults([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchName]);
+
   useEffect(() => { fetchRequests(); }, []);
 
   const onRefresh = () => {
@@ -79,15 +88,16 @@ export default function FriendRequestsScreen() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to search');
-      // For each result, fetch profile picture if not present
+      // For each result, fetch profile picture if not present, and filter out self
       const usersWithPics = await Promise.all(
-        (data.users || []).map(async (user: any) => {
-          if (user.profilePicture) return user;
+        (data.users || []).map(async (userObj: any) => {
+          if (userObj.uid === user.uid) return null; // filter out self
+          if (userObj.profilePicture) return userObj;
           // fallback: fetch full info
-          return await fetchUserInfo(user.uid, token);
+          return await fetchUserInfo(userObj.uid, token);
         })
       );
-      setSearchResults(usersWithPics);
+      setSearchResults(usersWithPics.filter(Boolean));
     } catch (e) {
       Alert.alert('Error', (e as Error).message || 'Failed to search');
     } finally {
@@ -187,10 +197,7 @@ export default function FriendRequestsScreen() {
             placeholder="Enter display name"
             value={searchName}
             onChangeText={setSearchName}
-            onSubmitEditing={handleSearch}
-            returnKeyType="search"
           />
-          <Button title="Search" onPress={handleSearch} disabled={searching || !searchName.trim()} />
         </View>
         {searching ? <ActivityIndicator style={{ marginTop: 8 }} /> : (
           <FlatList
