@@ -41,6 +41,24 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="friend-requests"
+        options={{
+          title: "Friends",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'people' : 'people-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="friends-list"
+        options={{
+          title: "Friends List",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'people-circle' : 'people-circle-outline'} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

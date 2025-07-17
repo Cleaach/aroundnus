@@ -86,4 +86,23 @@ const updateDisplayName = async (req, res) => {
   }
 };
 
-module.exports = { updateProfilePicture, getProfileData, updateDisplayName };
+// Get profile data by UID (for friend requests display)
+const getProfileDataByUid = async (req, res) => {
+  const { uid } = req.query;
+  if (!uid) return res.status(400).json({ error: 'Missing uid' });
+  try {
+    const userDoc = await admin.firestore().collection('users').doc(uid).get();
+    if (!userDoc.exists) return res.status(404).json({ error: 'User not found' });
+    const userData = userDoc.data();
+    return res.status(200).json({ displayName: userData.displayName || null, profilePicture: userData.profilePicture || null });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = {
+  updateProfilePicture,
+  getProfileData,
+  updateDisplayName,
+  getProfileDataByUid,
+};
