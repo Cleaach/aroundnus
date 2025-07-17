@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert, StyleSheet, ActivityIndicator, Image } from 'react-native';
-import { auth } from '../../firebase';
+import { auth } from '../firebase';
+import { useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 
 const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?name=User&background=random';
 
@@ -23,6 +25,7 @@ export default function FriendRequestsScreen() {
   const [searchResults, setSearchResults] = useState<{ uid: string, displayName: string, profilePicture: string | null }[]>([]);
   const [searching, setSearching] = useState(false);
   const [sendingUid, setSendingUid] = useState<string | null>(null);
+  const router = useRouter();
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -174,6 +177,7 @@ export default function FriendRequestsScreen() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{ title: '', headerBackTitle: 'Back' }} />
       <Text style={styles.title}>Friend Requests</Text>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Search Friends by Display Name</Text>
