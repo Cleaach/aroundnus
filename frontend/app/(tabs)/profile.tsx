@@ -12,9 +12,22 @@ import {
   RefreshControl,
   TextInput,
   ActivityIndicator,
+  FlatList,
 } from "react-native";
 import { auth } from "../../firebase";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import { useRouter } from 'expo-router';
+
+const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?name=User&background=random';
+
+async function fetchUserInfo(uid: string, token: string) {
+  const res = await fetch(`https://aroundnus.onrender.com/api/profile/get-profile-data-by-uid?uid=${uid}`, {
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+  if (!res.ok) return { uid, displayName: uid, profilePicture: null };
+  const data = await res.json();
+  return { uid, displayName: data.displayName || uid, profilePicture: data.profilePicture || null };
+}
 
 export default function ProfileScreen() {
   const [user, setUser] = useState<User | null>(null);
@@ -25,6 +38,10 @@ export default function ProfileScreen() {
   const [editingDisplayName, setEditingDisplayName] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState<string>("");
   const [savingDisplayName, setSavingDisplayName] = useState(false);
+  const [friends, setFriends] = useState<{ uid: string, displayName: string, profilePicture: string | null }[]>([]);
+  const [friendsLoading, setFriendsLoading] = useState(false);
+  const [friendSearch, setFriendSearch] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -68,6 +85,48 @@ export default function ProfileScreen() {
   useEffect(() => {
     if (user) fetchProfile();
   }, [user, refreshFlag]);
+
+  // Fetch friends
+  const fetchFriends = async () => {
+    setFriendsLoading(true);
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) throw new Error('Not logged in');
+      const token = await currentUser.getIdToken();
+      const response = await fetch('https://aroundnus.onrender.com/api/profile/get-profile-data', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to fetch profile');
+      const friendUids: string[] = data.friends || [];
+      const friendInfos = await Promise.all(friendUids.map(uid => fetchUserInfo(uid, token)));
+      setFriends(friendInfos);
+    } catch (e) {
+      // Optionally show error
+    } finally {
+      setFriendsLoading(false);
+    }
+  };
+
+  useEffect(() => { if (user) fetchFriends(); }, [user, refreshFlag]);
+
+  const filteredFriends = friendSearch.trim()
+    ? friends.filter(f => f.displayName.toLowerCase().includes(friendSearch.trim().toLowerCase()))
+    : friends;
+
+  const renderUserItem = (item: { uid: string, displayName: string, profilePicture: string | null }) => (
+    <View style={styles.userItem}>
+      <Image
+        source={{ uri: item.profilePicture || DEFAULT_AVATAR }}
+        style={styles.avatar}
+      />
+      <Text style={styles.userText}>{item.displayName}</Text>
+    </View>
+  );
 
   // Helper to upload image to backend
   const uploadProfilePicture = async (uri: string, type?: string, fileName?: string) => {
@@ -299,6 +358,32 @@ export default function ProfileScreen() {
             >
               <Text style={styles.buttonText}>Sign Out</Text>
             </TouchableOpacity>
+
+            {/* Friends List Section */}
+            <View style={styles.friendsSection}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 32, marginBottom: 8 }}>
+                <Text style={styles.friendsHeader}>Friends</Text>
+                <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/friend-requests')}>
+                  <Text style={styles.addBtnText}>+</Text>
+                </TouchableOpacity>
+              </View>
+              <TextInput
+                style={styles.friendSearchInput}
+                placeholder="Search friends"
+                value={friendSearch}
+                onChangeText={setFriendSearch}
+              />
+              {friendsLoading ? <ActivityIndicator /> : (
+                <FlatList
+                  data={filteredFriends}
+                  keyExtractor={(item) => item.uid}
+                  renderItem={({ item }) => renderUserItem(item)}
+                  ListEmptyComponent={<Text style={styles.emptyText}>No friends found</Text>}
+                  style={{ marginTop: 8 }}
+                  scrollEnabled={false}
+                />
+              )}
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -340,4 +425,13 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
   },
+  friendsSection: { width: '100%', marginTop: 24 },
+  friendsHeader: { fontSize: 20, fontWeight: 'bold', flex: 1 },
+  addBtn: { backgroundColor: '#2196F3', padding: 8, borderRadius: 4, marginLeft: 8 },
+  addBtnText: { color: '#fff', fontWeight: 'bold' },
+  friendSearchInput: { borderWidth: 1, borderColor: '#ccc', borderRadius: 6, padding: 8, marginBottom: 8, marginTop: 8 },
+  userItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#eee' },
+  avatar: { width: 36, height: 36, borderRadius: 18, marginRight: 12, backgroundColor: '#eee' },
+  userText: { flex: 1 },
+  emptyText: { color: '#888', fontStyle: 'italic', textAlign: 'center', marginTop: 8 },
 });

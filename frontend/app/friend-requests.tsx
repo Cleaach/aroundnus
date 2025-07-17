@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert, StyleSheet, ActivityIndicator, Image } from 'react-native';
-import { auth } from '../../firebase';
+import { auth } from '../firebase';
+import { useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 
 const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?name=User&background=random';
 
@@ -23,6 +25,7 @@ export default function FriendRequestsScreen() {
   const [searchResults, setSearchResults] = useState<{ uid: string, displayName: string, profilePicture: string | null }[]>([]);
   const [searching, setSearching] = useState(false);
   const [sendingUid, setSendingUid] = useState<string | null>(null);
+  const router = useRouter();
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -57,6 +60,15 @@ export default function FriendRequestsScreen() {
     }
   };
 
+  useEffect(() => {
+    if (searchName.trim()) {
+      handleSearch();
+    } else {
+      setSearchResults([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchName]);
+
   useEffect(() => { fetchRequests(); }, []);
 
   const onRefresh = () => {
@@ -76,15 +88,16 @@ export default function FriendRequestsScreen() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to search');
-      // For each result, fetch profile picture if not present
+      // For each result, fetch profile picture if not present, and filter out self
       const usersWithPics = await Promise.all(
-        (data.users || []).map(async (user: any) => {
-          if (user.profilePicture) return user;
+        (data.users || []).map(async (userObj: any) => {
+          if (userObj.uid === user.uid) return null; // filter out self
+          if (userObj.profilePicture) return userObj;
           // fallback: fetch full info
-          return await fetchUserInfo(user.uid, token);
+          return await fetchUserInfo(userObj.uid, token);
         })
       );
-      setSearchResults(usersWithPics);
+      setSearchResults(usersWithPics.filter(Boolean));
     } catch (e) {
       Alert.alert('Error', (e as Error).message || 'Failed to search');
     } finally {
@@ -174,6 +187,7 @@ export default function FriendRequestsScreen() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{ title: '', headerBackTitle: 'Back' }} />
       <Text style={styles.title}>Friend Requests</Text>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Search Friends by Display Name</Text>
@@ -183,10 +197,7 @@ export default function FriendRequestsScreen() {
             placeholder="Enter display name"
             value={searchName}
             onChangeText={setSearchName}
-            onSubmitEditing={handleSearch}
-            returnKeyType="search"
           />
-          <Button title="Search" onPress={handleSearch} disabled={searching || !searchName.trim()} />
         </View>
         {searching ? <ActivityIndicator style={{ marginTop: 8 }} /> : (
           <FlatList
