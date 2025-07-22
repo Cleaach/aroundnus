@@ -22,10 +22,11 @@ interface SavedLocation {
 }
 
 const allowedLocations = [
-  "Operating theatre",
-  "ICU",
-  "Pharmacy",
-  "Brönnimanns"
+  "Bridge to Mall 1",
+  "Erafone",
+  "Church",
+  "Supermarket",
+  "Paris Baguette"
 ];
 
 export default function SavedLocationsScreen() {

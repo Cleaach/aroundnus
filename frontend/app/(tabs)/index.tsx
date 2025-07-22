@@ -23,10 +23,32 @@ type LocationType = {
 } | null;
 
 const dummyDestinations = [
-  "Operating theatre",
-  "ICU",
-  "Pharmacy",
-  "Brönnimanns"
+  "Bridge to Mall 1",
+  "Erafone",
+  "Church",
+  "Supermarket",
+  "Paris Baguette"
+];
+
+const POIS = [
+  { name: "Paris Baguette", latitude: -6.1876921, longitude: 106.7328959 },
+  { name: "Supermarket", latitude: -6.1871301, longitude: 106.7327142 },
+  { name: "Erafone", latitude: -6.1872961, longitude: 106.7329331 },
+  { name: "Church", latitude: -6.1875447, longitude: 106.7324325 },
+  { name: "Bridge to Mall 1", latitude: -6.1873254, longitude: 106.7334012 }
+];
+
+const mapStyle = [
+  {
+    featureType: "poi",
+    elementType: "all",
+    stylers: [{ visibility: "off" }]
+  },
+  {
+    featureType: "transit",
+    elementType: "labels.icon",
+    stylers: [{ visibility: "off" }]
+  }
 ];
 
 export default function HomeScreen() {
@@ -34,9 +56,7 @@ export default function HomeScreen() {
   const [region, setRegion] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [selectedDestination, setSelectedDestination] = useState<string | null>(
-    null
-  );
+  const [selectedDestination, setSelectedDestination] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -48,8 +68,8 @@ export default function HomeScreen() {
       setLocation({
         latitude: coords.latitude,
         longitude: coords.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
+        latitudeDelta: 0.0012,
+        longitudeDelta: 0.0012,
       });
     })();
   }, []);
@@ -98,17 +118,23 @@ export default function HomeScreen() {
           style={StyleSheet.absoluteFillObject}
           provider={PROVIDER_GOOGLE}
           initialRegion={location}
+          customMapStyle={mapStyle}
           showsUserLocation
         >
-          {location && (
+          {POIS.map((poi, idx) => (
             <Marker
-              coordinate={{
-                latitude: location.latitude,
-                longitude: location.longitude,
+              key={idx}
+              coordinate={{ latitude: poi.latitude, longitude: poi.longitude }}
+              title={poi.name}
+              onPress={() => {
+                setSearchQuery(poi.name);
+                setSelectedDestination(poi.name);
+                setSuggestions([]);
+                Keyboard.dismiss();
               }}
-              title="You are here"
             />
-          )}
+          ))}
+
         </MapView>
       ) : (
         <View style={[StyleSheet.absoluteFill, styles.webPlaceholder]}>
