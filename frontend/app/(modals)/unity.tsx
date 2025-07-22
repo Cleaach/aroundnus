@@ -39,7 +39,7 @@ const UnityScreen = () => {
     // Wait longer for Unity to fully terminate
     setTimeout(() => {
       router.back();
-    }, 3000);
+    }, 500);
   };
 
   useEffect(() => {
