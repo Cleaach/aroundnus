@@ -49,7 +49,7 @@ const initUserDoc = async (req, res) => {
                 displayName: displayName,
                 friendRequests: { received: [], sent: [] },
                 friends: [],
-                sharedLocation: [],
+                sharedLocations: [],
             });
         });
 
