@@ -13,7 +13,7 @@ const shareLocation = async (req, res) => {
         const userRef = admin.firestore().collection('users').doc(uid);
 
         // Use dot notation to update the map field
-        const updatePath = `sharedLocations.${friendUid}`;
+        const updatePath = `sharedLocation.${friendUid}`;
         await userRef.update({
             [updatePath]: admin.firestore.FieldValue.arrayUnion(locationName)
         });
@@ -41,12 +41,12 @@ const getSharedLocations = async (req, res) => {
         }
 
         const friendData = friendDoc.data();
-        const sharedLocationsMap = friendData.sharedLocations || {};
+        const sharedLocationsMap = friendData.sharedLocation || {};
 
         // Get the array of locations the friend has shared with the current user
         const locationsSharedWithCurrentUser = sharedLocationsMap[uid] || [];
 
-        res.status(200).json({ sharedLocations: locationsSharedWithCurrentUser });
+        res.status(200).json({ sharedLocation: locationsSharedWithCurrentUser });
     } catch (error) {
         console.error('Error fetching shared locations:', error);
         res.status(500).json({ error: 'Failed to fetch shared locations' });
@@ -64,7 +64,7 @@ const removeSharedLocation = async (req, res) => {
 
     try {
         const userRef = admin.firestore().collection('users').doc(uid);
-        const updatePath = `sharedLocations.${friendUid}`;
+        const updatePath = `sharedLocation.${friendUid}`;
 
         await userRef.update({
             [updatePath]: admin.firestore.FieldValue.arrayRemove(locationName)

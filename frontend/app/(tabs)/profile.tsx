@@ -127,10 +127,7 @@ export default function ProfileScreen() {
           text: 'View Shared Locations',
           onPress: () => router.push({ pathname: '/(modals)/view-shared-locations', params: { friendUid: friend.uid, friendName: friend.displayName } }),
         },
-        {
-          text: 'View Profile',
-          onPress: () => console.log('View profile pressed for', friend.uid),
-        },
+
         {
           text: 'Cancel',
           style: 'cancel',
