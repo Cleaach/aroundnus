@@ -121,13 +121,12 @@ export default function ProfileScreen() {
   const handleFriendPress = (friend: { uid: string; displayName: string; }) => {
     Alert.alert(
       friend.displayName,
-      'Select an action',
+      'View shared locations?',
       [
         {
-          text: 'View Shared Locations',
-          onPress: () => router.push({ pathname: '/(modals)/view-shared-locations', params: { friendUid: friend.uid, friendName: friend.displayName } }),
+          text: 'View',
+          onPress: () => router.push({ pathname: '/(modals)/view-shared-locations', params: { friendUid: friend.uid, friendName: friend.displayName } })
         },
-
         {
           text: 'Cancel',
           style: 'cancel',
@@ -138,7 +137,7 @@ export default function ProfileScreen() {
   };
 
   const renderUserItem = (item: { uid: string, displayName: string, profilePicture: string | null }) => (
-    <TouchableOpacity onPress={() => handleFriendPress(item)}>
+    <TouchableOpacity style={styles.userItem} onPress={() => handleFriendPress(item)}>
       <View style={styles.userItem}>
         <Image
           source={{ uri: item.profilePicture || DEFAULT_AVATAR }}

@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import { auth } from '../../firebase';
 import { FontAwesome } from '@expo/vector-icons';
-import { v4 as uuidv4 } from 'uuid';
 import { useRouter } from 'expo-router';
 
 interface SavedLocation {
@@ -21,23 +20,13 @@ interface SavedLocation {
   name: string;
 }
 
-const allowedLocations = [
-  "Bridge to Mall 1",
-  "Erafone",
-  "Church",
-  "Supermarket",
-  "Paris Baguette"
-];
-
 export default function SavedLocationsScreen() {
   const [locations, setLocations] = useState<SavedLocation[]>([]);
   const [filtered, setFiltered] = useState<SavedLocation[]>([]);
   const [search, setSearch] = useState('');
-  const [newLocation, setNewLocation] = useState('');
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
-  const [suggestions, setSuggestions] = useState<string[]>([]);
   const router = useRouter();
 
   const fetchLocations = useCallback(async () => {
@@ -73,55 +62,6 @@ export default function SavedLocationsScreen() {
     setSearch(text);
     if (!text) setFiltered(locations);
     else setFiltered(locations.filter(l => l.name.toLowerCase().includes(text.toLowerCase())));
-  };
-
-  const handleAdd = async () => {
-    if (!newLocation.trim()) return;
-    if (!allowedLocations.includes(newLocation)) {
-      setError('Please select a valid location from the list.');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      const user = auth.currentUser;
-      if (!user) throw new Error('Not logged in');
-      const token = await user.getIdToken();
-      const locationToAdd = { id: uuidv4(), name: newLocation };
-      const res = await fetch('https://aroundnus.onrender.com/api/savedLocations/add', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ location: locationToAdd }),
-      });
-      if (!res.ok) throw new Error('Failed to add location');
-      setNewLocation('');
-      setSuggestions([]);
-      fetchLocations();
-    } catch (e) {
-      setError((e as Error).message || 'Error adding location');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Suggestion logic for add input
-  const handleAddInputChange = (text: string) => {
-    setNewLocation(text);
-    if (!text) {
-      setSuggestions([]);
-      return;
-    }
-    const matches = allowedLocations.filter((loc) =>
-      loc.toLowerCase().includes(text.toLowerCase())
-    );
-    setSuggestions(matches);
-  };
-
-  const handleShare = (location: SavedLocation) => {
-    router.push({ pathname: '/(modals)/share-location', params: { locationName: location.name } });
   };
 
   const handleDelete = async (location: SavedLocation) => {
@@ -173,59 +113,23 @@ export default function SavedLocationsScreen() {
           onChangeText={handleSearch}
         />
       </View>
-      <View style={styles.addRow}>
-        <TextInput
-          style={styles.addInput}
-          placeholder="Add new location..."
-          value={newLocation}
-          onChangeText={handleAddInputChange}
-        />
-        <TouchableOpacity style={styles.addButton} onPress={handleAdd} disabled={loading || !allowedLocations.includes(newLocation)}>
-          <Text style={styles.addButtonText}>+</Text>
-        </TouchableOpacity>
-      </View>
-      {newLocation.length > 0 && suggestions.length > 0 && (
-        <View style={[styles.suggestionContainer, { marginHorizontal: 16, marginBottom: 8 }]}>
-          <FlatList
-            data={suggestions}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.suggestionItem}
-                onPress={() => {
-                  setNewLocation(item);
-                  setSuggestions([]);
-                }}
-              >
-                <Text>{item}</Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      )}
+
       {error ? <Text style={styles.error}>{error}</Text> : null}
       {loading && !refreshing ? <ActivityIndicator style={{ margin: 20 }} /> : null}
       <FlatList
         data={filtered}
         keyExtractor={(item, idx) => item.id || item.name + idx}
         renderItem={({ item }) => (
-          <View style={styles.locationRow}>
-            <Text style={styles.locationName}>{item.name}</Text>
-            <View style={styles.locationActions}>
-              <TouchableOpacity style={styles.actionButton} onPress={() => handleShare(item)}>
-                <FontAwesome name="share-square-o" size={20} color="#007AFF" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => router.navigate({ pathname: '/(modals)/unity', params: { destination: item.name } })}
-              >
-                <FontAwesome name="location-arrow" size={20} color="#007AFF" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButton} onPress={() => handleDelete(item)}>
-                <FontAwesome name="trash" size={20} color="#666" />
-              </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push({ pathname: '/', params: { destination: item.name } })}>
+            <View style={styles.locationRow}>
+              <Text style={styles.locationName}>{item.name}</Text>
+              <View style={styles.locationActions}>
+                <TouchableOpacity style={styles.actionButton} onPress={(e) => { e.stopPropagation(); handleDelete(item); }}>
+                  <FontAwesome name="trash" size={20} color="#666" />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         ListEmptyComponent={!loading ? <Text style={styles.empty}>No saved locations.</Text> : null}

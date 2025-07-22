@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
-import { useLocalSearchParams, Stack } from 'expo-router';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
+import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { auth } from '../../firebase';
 
 export default function ViewSharedLocationsModal() {
   const { friendUid, friendName } = useLocalSearchParams<{ friendUid: string; friendName: string }>();
-  const [locations, setLocations] = useState<string[]>([]);
+  const [locations, setLocations] = useState<{ locationId: string, locationName: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
 
   const fetchSharedLocations = async () => {
     if (!friendUid) return;
@@ -19,7 +20,7 @@ export default function ViewSharedLocationsModal() {
       }
       const token = await currentUser.getIdToken();
 
-      const response = await fetch(`https://aroundnus.onrender.com/api/shared-locations/${friendUid}`, {
+      const response = await fetch(`https://aroundnus.onrender.com/api/shared-locations/get/${friendUid}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -31,7 +32,7 @@ export default function ViewSharedLocationsModal() {
         throw new Error(data.error || 'Failed to fetch shared locations');
       }
 
-      setLocations(data.sharedLocations || []);
+      setLocations(data.sharedLocation || []);
     } catch (error) {
       console.error(error);
       // Optionally show an alert to the user
@@ -50,6 +51,10 @@ export default function ViewSharedLocationsModal() {
     fetchSharedLocations();
   };
 
+  const handleLocationPress = (location: { locationName: string }) => {
+    router.push({ pathname: '/', params: { destination: location.locationName } });
+  };
+
   if (loading) {
     return <ActivityIndicator size="large" style={styles.centered} />;
   }
@@ -59,11 +64,11 @@ export default function ViewSharedLocationsModal() {
       <Stack.Screen options={{ title: `Shared by ${friendName}` }} />
       <FlatList
         data={locations}
-        keyExtractor={(item, index) => `${item}-${index}`}
+        keyExtractor={(item) => item.locationId}
         renderItem={({ item }) => (
-          <View style={styles.locationItem}>
-            <Text style={styles.locationText}>{item}</Text>
-          </View>
+          <TouchableOpacity style={styles.locationItem} onPress={() => handleLocationPress(item)}>
+            <Text style={styles.locationText}>{item.locationName}</Text>
+          </TouchableOpacity>
         )}
         ListEmptyComponent={<Text style={styles.emptyText}>No locations shared by {friendName}.</Text>}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

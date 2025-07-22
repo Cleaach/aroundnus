@@ -1,5 +1,5 @@
 import * as Location from "expo-location";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   FlatList,
   Keyboard,
@@ -13,7 +13,8 @@ import {
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { FontAwesome } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import LocationCard from '../components/LocationCard';
 
 type LocationType = {
   latitude: number;
@@ -52,12 +53,15 @@ const mapStyle = [
 ];
 
 export default function HomeScreen() {
+  const mapRef = useRef<MapView>(null);
   const [location, setLocation] = useState<LocationType>(null);
   const [region, setRegion] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedDestination, setSelectedDestination] = useState<string | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
   const router = useRouter();
+  const params = useLocalSearchParams();
 
   useEffect(() => {
     (async () => {
@@ -73,6 +77,32 @@ export default function HomeScreen() {
       });
     })();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const destinationParam = params.destination;
+      if (destinationParam && typeof destinationParam === 'string') {
+        const poi = POIS.find((p) => p.name === destinationParam);
+        if (poi) {
+          setSearchQuery(poi.name);
+          setSelectedDestination(poi.name);
+          if (mapRef.current) {
+            mapRef.current.animateToRegion(
+              {
+                latitude: poi.latitude,
+                longitude: poi.longitude,
+                latitudeDelta: 0.0012,
+                longitudeDelta: 0.0012,
+              },
+              1000
+            );
+          }
+          // Clear the parameter after use
+          router.setParams({ destination: undefined });
+        }
+      }
+    }, [params.destination, mapRef, POIS, router, setSearchQuery, setSelectedDestination])
+  );
 
   const handleSearchChange = (text: string) => {
     setSearchQuery(text);
@@ -94,20 +124,30 @@ export default function HomeScreen() {
     setSuggestions([]);
     setSelectedDestination(suggestion);
     Keyboard.dismiss();
+
+    const poi = POIS.find((p) => p.name === suggestion);
+    if (poi && mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: poi.latitude,
+          longitude: poi.longitude,
+          latitudeDelta: 0.0012,
+          longitudeDelta: 0.0012,
+        },
+        1000
+      );
+    }
   };
 
   const handleSearch = () => {
     console.log('Searching for:', searchQuery);
   };
 
-  const handleNavigate = () => {
-    if (selectedDestination) {
-      router.navigate({
-        pathname: '/(modals)/unity',
-        params: { destination: selectedDestination }
-      });
-    }
+  const handleCloseCard = () => {
+    setSelectedDestination(null);
   };
+
+
 
   const isWeb = Platform.OS === "web";
 
@@ -115,6 +155,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {!isWeb && location ? (
         <MapView
+          ref={mapRef}
           style={StyleSheet.absoluteFillObject}
           provider={PROVIDER_GOOGLE}
           initialRegion={location}
@@ -131,6 +172,17 @@ export default function HomeScreen() {
                 setSelectedDestination(poi.name);
                 setSuggestions([]);
                 Keyboard.dismiss();
+                if (mapRef.current) {
+                  mapRef.current.animateToRegion(
+                    {
+                      latitude: poi.latitude,
+                      longitude: poi.longitude,
+                      latitudeDelta: 0.0012,
+                      longitudeDelta: 0.0012,
+                    },
+                    1000
+                  );
+                }
               }}
             />
           ))}
@@ -179,12 +231,9 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {selectedDestination && (
-          <TouchableOpacity style={styles.navigateButton} onPress={handleNavigate}>
-            <Text style={styles.navigateButtonText}>Navigate</Text>
-          </TouchableOpacity>
-        )}
       </View>
+
+      {selectedDestination && <LocationCard destination={selectedDestination} onClose={handleCloseCard} />}
     </View>
   );
 }
@@ -225,18 +274,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#999",
   },
-  navigateButton: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 5,
-  },
-  navigateButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
-  },
+
   webPlaceholder: {
     justifyContent: "center",
     alignItems: "center",

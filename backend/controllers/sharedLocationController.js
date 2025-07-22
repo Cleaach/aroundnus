@@ -35,18 +35,19 @@ const getSharedLocations = async (req, res) => {
     }
 
     try {
-        const friendDoc = await admin.firestore().collection('users').doc(friendUid).get();
-        if (!friendDoc.exists) {
-            return res.status(404).json({ error: 'Friend not found' });
+        // Fetch the current user's document to find what the friend has shared with them
+        const userDoc = await admin.firestore().collection('users').doc(uid).get();
+        if (!userDoc.exists) {
+            return res.status(404).json({ error: 'Current user not found' });
         }
 
-        const friendData = friendDoc.data();
-        const sharedLocationsMap = friendData.sharedLocation || {};
+        const userData = userDoc.data();
+        const sharedLocationsMap = userData.sharedLocation || {};
 
         // Get the array of locations the friend has shared with the current user
-        const locationsSharedWithCurrentUser = sharedLocationsMap[uid] || [];
+        const locationsFromFriend = sharedLocationsMap[friendUid] || [];
 
-        res.status(200).json({ sharedLocation: locationsSharedWithCurrentUser });
+        res.status(200).json({ sharedLocation: locationsFromFriend });
     } catch (error) {
         console.error('Error fetching shared locations:', error);
         res.status(500).json({ error: 'Failed to fetch shared locations' });
