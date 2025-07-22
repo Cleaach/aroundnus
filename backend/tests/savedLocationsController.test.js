@@ -22,7 +22,7 @@ describe('getSavedLocations', () => {
 
         const docMock = {
             get: jest.fn().mockResolvedValue({
-                data: () => ({ savedLocations: ['location1', 'location2'] }),
+                data: () => ({ bookmarkedLocations: ['location1', 'location2'] }),
             }),
         };
 
@@ -51,10 +51,10 @@ describe('addSavedLocation', () => {
         };
 
         // Mock Firestore chain
-        const savedLocations = [];
+        const bookmarkedLocations = [];
         const docMock = {
             get: jest.fn().mockResolvedValue({
-                data: () => ({ savedLocations }),
+                data: () => ({ bookmarkedLocations }),
             }),
             update: jest.fn().mockResolvedValue(),
         };
@@ -64,7 +64,7 @@ describe('addSavedLocation', () => {
 
         await addSavedLocation(req, res);
 
-        expect(docMock.update).toHaveBeenCalledWith({ savedLocations: [req.body.location] });
+        expect(docMock.update).toHaveBeenCalledWith({ bookmarkedLocations: [req.body.location] });
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith({ message: "Location added to saved locations" });
     });
@@ -79,10 +79,10 @@ describe('deleteSavedLocation', () => {
         const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
         // Mock Firestore chain
-        const savedLocations = [{ id: '123', name: 'Test Location' }, { id: '456', name: 'Other Location' }];
+        const bookmarkedLocations = [{ id: '123', name: 'Test Location' }, { id: '456', name: 'Other Location' }];
         const docMock = {
             get: jest.fn().mockResolvedValue({
-                data: () => ({ savedLocations }),
+                data: () => ({ bookmarkedLocations }),
             }),
             update: jest.fn().mockResolvedValue(),
         };
@@ -92,7 +92,7 @@ describe('deleteSavedLocation', () => {
 
         await deleteSavedLocation(req, res);
 
-        expect(docMock.update).toHaveBeenCalledWith({ savedLocations: [{ id: '456', name: 'Other Location' }] });
+        expect(docMock.update).toHaveBeenCalledWith({ bookmarkedLocations: [{ id: '456', name: 'Other Location' }] });
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith({ message: "Location deleted from saved locations" });
     });

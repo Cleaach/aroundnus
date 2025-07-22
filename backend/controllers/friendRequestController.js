@@ -1,21 +1,5 @@
 const { admin } = require('../config/firebase');
 
-// Helper to ensure friendRequests and friends arrays exist
-async function ensureUserFriendFields(userRef) {
-    const userDoc = await userRef.get();
-    if (!userDoc.exists) return;
-    const data = userDoc.data();
-    const update = {};
-    if (!data.friendRequests || typeof data.friendRequests !== 'object') {
-        update['friendRequests'] = { received: [], sent: [] };
-    } else {
-        if (!Array.isArray(data.friendRequests.received)) update['friendRequests.received'] = [];
-        if (!Array.isArray(data.friendRequests.sent)) update['friendRequests.sent'] = [];
-    }
-    if (!Array.isArray(data.friends)) update['friends'] = [];
-    if (Object.keys(update).length > 0) await userRef.update(update);
-}
-
 // Send a friend request by targetUid
 const sendFriendRequest = async (req, res) => {
     const { uid } = req.user;
@@ -26,10 +10,11 @@ const sendFriendRequest = async (req, res) => {
     try {
         const userRef = admin.firestore().collection('users').doc(uid);
         const targetRef = admin.firestore().collection('users').doc(targetUid);
-        await ensureUserFriendFields(userRef);
-        await ensureUserFriendFields(targetRef);
         const userDoc = await userRef.get();
         const targetDoc = await targetRef.get();
+        // Debug log
+        console.log('sendFriendRequest userDoc:', userDoc.data());
+        console.log('sendFriendRequest targetDoc:', targetDoc.data());
         if (!targetDoc.exists) {
             return res.status(404).json({ error: 'Target user not found' });
         }
@@ -56,7 +41,6 @@ const getReceivedFriendRequests = async (req, res) => {
     const { uid } = req.user;
     try {
         const userRef = admin.firestore().collection('users').doc(uid);
-        await ensureUserFriendFields(userRef);
         const userDoc = await userRef.get();
         const received = userDoc.data().friendRequests?.received || [];
         return res.status(200).json({ received });
@@ -70,7 +54,6 @@ const getSentFriendRequests = async (req, res) => {
     const { uid } = req.user;
     try {
         const userRef = admin.firestore().collection('users').doc(uid);
-        await ensureUserFriendFields(userRef);
         const userDoc = await userRef.get();
         const sent = userDoc.data().friendRequests?.sent || [];
         return res.status(200).json({ sent });
@@ -89,10 +72,11 @@ const approveFriendRequest = async (req, res) => {
     try {
         const userRef = admin.firestore().collection('users').doc(uid);
         const requesterRef = admin.firestore().collection('users').doc(requesterUid);
-        await ensureUserFriendFields(userRef);
-        await ensureUserFriendFields(requesterRef);
         const userDoc = await userRef.get();
         const requesterDoc = await requesterRef.get();
+        // Debug log
+        console.log('approveFriendRequest userDoc:', userDoc.data());
+        console.log('approveFriendRequest requesterDoc:', requesterDoc.data());
         if (!requesterDoc.exists) {
             return res.status(404).json({ error: 'Requester not found' });
         }
@@ -120,8 +104,11 @@ const rejectFriendRequest = async (req, res) => {
     try {
         const userRef = admin.firestore().collection('users').doc(uid);
         const requesterRef = admin.firestore().collection('users').doc(requesterUid);
-        await ensureUserFriendFields(userRef);
-        await ensureUserFriendFields(requesterRef);
+        const userDoc = await userRef.get();
+        const requesterDoc = await requesterRef.get();
+        // Debug log
+        console.log('rejectFriendRequest userDoc:', userDoc.data());
+        console.log('rejectFriendRequest requesterDoc:', requesterDoc.data());
         await userRef.update({
             'friendRequests.received': admin.firestore.FieldValue.arrayRemove(requesterUid)
         });

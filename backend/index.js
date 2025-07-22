@@ -3,6 +3,7 @@ const savedLocationsRoutes = require('./routes/savedLocationsRoutes');
 const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const friendRequestRoutes = require('./routes/friendRequestRoutes');
+const sharedLocationRoutes = require('./routes/sharedLocationRoutes');
 const cors = require('cors');
 
 const app = express();
@@ -20,6 +21,7 @@ app.use('/api/savedLocations', savedLocationsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/friend-requests', friendRequestRoutes);
+app.use('/api/shared-locations', sharedLocationRoutes);
 
 // Catch-all 404 handler for unknown routes
 app.use((req, res) => {

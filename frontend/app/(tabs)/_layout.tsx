@@ -33,6 +33,24 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="saved-locations"
+        options={{
+          title: "Saved Locations",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'bookmark' : 'bookmark-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="shared-locations"
+        options={{
+          title: "Shared",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'share-social' : 'share-social-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
