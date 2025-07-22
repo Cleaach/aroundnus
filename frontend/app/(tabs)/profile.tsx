@@ -118,14 +118,38 @@ export default function ProfileScreen() {
     ? friends.filter(f => f.displayName.toLowerCase().includes(friendSearch.trim().toLowerCase()))
     : friends;
 
+  const handleFriendPress = (friend: { uid: string; displayName: string; }) => {
+    Alert.alert(
+      friend.displayName,
+      'Select an action',
+      [
+        {
+          text: 'View Shared Locations',
+          onPress: () => router.push({ pathname: '/(modals)/view-shared-locations', params: { friendUid: friend.uid, friendName: friend.displayName } }),
+        },
+        {
+          text: 'View Profile',
+          onPress: () => console.log('View profile pressed for', friend.uid),
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   const renderUserItem = (item: { uid: string, displayName: string, profilePicture: string | null }) => (
-    <View style={styles.userItem}>
-      <Image
-        source={{ uri: item.profilePicture || DEFAULT_AVATAR }}
-        style={styles.avatar}
-      />
-      <Text style={styles.userText}>{item.displayName}</Text>
-    </View>
+    <TouchableOpacity onPress={() => handleFriendPress(item)}>
+      <View style={styles.userItem}>
+        <Image
+          source={{ uri: item.profilePicture || DEFAULT_AVATAR }}
+          style={styles.avatar}
+        />
+        <Text style={styles.userText}>{item.displayName}</Text>
+      </View>
+    </TouchableOpacity>
   );
 
   // Helper to upload image to backend

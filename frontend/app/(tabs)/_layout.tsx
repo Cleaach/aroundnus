@@ -1,6 +1,5 @@
 import { Tabs } from "expo-router";
 import React from 'react';
-
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -29,24 +28,6 @@ export default function TabLayout() {
           title: "Saved Locations",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'bookmark' : 'bookmark-outline'} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="saved-locations"
-        options={{
-          title: "Saved Locations",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'bookmark' : 'bookmark-outline'} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="shared-locations"
-        options={{
-          title: "Shared",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'share-social' : 'share-social-outline'} color={color} />
           ),
         }}
       />

@@ -119,6 +119,10 @@ export default function SavedLocationsScreen() {
     setSuggestions(matches);
   };
 
+  const handleShare = (location: SavedLocation) => {
+    router.push({ pathname: '/(modals)/share-location', params: { locationName: location.name } });
+  };
+
   const handleDelete = async (location: SavedLocation) => {
     if (!location.id) {
       setError('Location does not have an id.');
@@ -207,13 +211,16 @@ export default function SavedLocationsScreen() {
           <View style={styles.locationRow}>
             <Text style={styles.locationName}>{item.name}</Text>
             <View style={styles.locationActions}>
+              <TouchableOpacity style={styles.actionButton} onPress={() => handleShare(item)}>
+                <FontAwesome name="share-square-o" size={20} color="#007AFF" />
+              </TouchableOpacity>
               <TouchableOpacity
-                style={styles.unityButton}
+                style={styles.actionButton}
                 onPress={() => router.navigate({ pathname: '/(modals)/unity', params: { destination: item.name } })}
               >
                 <FontAwesome name="location-arrow" size={20} color="#007AFF" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item)}>
+              <TouchableOpacity style={styles.actionButton} onPress={() => handleDelete(item)}>
                 <FontAwesome name="trash" size={20} color="#666" />
               </TouchableOpacity>
             </View>
@@ -296,17 +303,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  unityButton: {
-    marginRight: 8,
+  actionButton: {
     padding: 6,
-    borderRadius: 6,
-    backgroundColor: '#e6f0ff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  deleteButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   deleteButtonText: {
     color: '#fff',
