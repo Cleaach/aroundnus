@@ -13,9 +13,9 @@ const shareLocation = async (req, res) => {
         const userRef = admin.firestore().collection('users').doc(uid);
 
         // Use dot notation to update the map field
-        const updatePath = `sharedLocation.${friendUid}`;
+        const updatePath = `sharedLocations.${friendUid}`;
         await userRef.update({
-            [updatePath]: admin.firestore.FieldValue.arrayUnion(locationName)
+            [updatePath]: admin.firestore.FieldValue.arrayUnion({ locationId: new Date().getTime().toString(), locationName })
         });
 
         res.status(200).json({ message: 'Location shared successfully' });
@@ -42,7 +42,7 @@ const getSharedLocations = async (req, res) => {
         }
 
         const userData = userDoc.data();
-        const sharedLocationsMap = userData.sharedLocation || {};
+        const sharedLocationsMap = userData.sharedLocations || {};
 
         // Get the array of locations the friend has shared with the current user
         const locationsFromFriend = sharedLocationsMap[friendUid] || [];
@@ -65,13 +65,13 @@ const removeSharedLocation = async (req, res) => {
 
     try {
         const userRef = admin.firestore().collection('users').doc(uid);
-        const updatePath = `sharedLocation.${friendUid}`;
+        const updatePath = `sharedLocations.${friendUid}`;
 
         await userRef.update({
-            [updatePath]: admin.firestore.FieldValue.arrayRemove(locationName)
+            [updatePath]: admin.firestore.FieldValue.arrayRemove({ locationName })
         });
 
-        res.status(200).json({ message: 'Shared location removed successfully' });
+        res.status(200).json({ message: 'Location removed successfully' });
     } catch (error) {
         console.error('Error removing shared location:', error);
         res.status(500).json({ error: 'Failed to remove shared location' });
