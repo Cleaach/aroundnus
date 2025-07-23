@@ -17,8 +17,10 @@ import {
 import { auth } from "../../firebase";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import { useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Image as RNImage } from 'react-native';
 
-const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?name=User&background=random';
+const DEFAULT_AVATAR = require('../../assets/images/profile.jpg');
 
 async function fetchUserInfo(uid: string, token: string) {
   const res = await fetch(`https://aroundnus.onrender.com/api/profile/get-profile-data-by-uid?uid=${uid}`, {
@@ -140,7 +142,7 @@ export default function ProfileScreen() {
     <TouchableOpacity style={styles.userItem} onPress={() => handleFriendPress(item)}>
       <View style={styles.userItem}>
         <Image
-          source={{ uri: item.profilePicture || DEFAULT_AVATAR }}
+          source={item.profilePicture ? { uri: item.profilePicture } : DEFAULT_AVATAR}
           style={styles.avatar}
         />
         <Text style={styles.userText}>{item.displayName}</Text>
@@ -327,7 +329,7 @@ export default function ProfileScreen() {
                 style={styles.profileImage}
               />
             </TouchableOpacity>
-            <Text style={styles.welcomeText}>Welcome, {displayName || user.email}</Text>
+            <Text style={styles.welcomeText}>Hi, {displayName || user.email}!</Text>
             {editingDisplayName ? (
               <View style={{ width: '100%', alignItems: 'center', marginBottom: 16 }}>
                 <TextInput
@@ -343,7 +345,7 @@ export default function ProfileScreen() {
                     width: '100%',
                     marginBottom: 8,
                   }}
-                  placeholder="New display name"
+                  placeholder="Set display name"
                   value={newDisplayName}
                   onChangeText={setNewDisplayName}
                   autoCapitalize="words"
@@ -365,26 +367,27 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
               </View>
             ) : (
-              <TouchableOpacity
-                style={{ backgroundColor: '#eee', borderRadius: 8, paddingVertical: 8, paddingHorizontal: 16, alignItems: 'center', marginBottom: 16 }}
-                onPress={() => { setEditingDisplayName(true); setNewDisplayName(displayName || ""); }}
-              >
-                <Text style={{ color: '#000' }}>Edit Display Name</Text>
-              </TouchableOpacity>
+              <View style={styles.iconRow}>
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() => { setEditingDisplayName(true); setNewDisplayName(displayName || ""); }}
+                >
+                  <Ionicons name="create-outline" size={28} color="#007AFF" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={handleSignOut}
+                >
+                  <Ionicons name="log-out-outline" size={28} color="#FF3B30" />
+                </TouchableOpacity>
+              </View>
             )}
-            <TouchableOpacity
-              style={styles.signOutButton}
-              onPress={handleSignOut}
-            >
-              <Text style={styles.buttonText}>Sign Out</Text>
-            </TouchableOpacity>
 
-            {/* Friends List Section */}
             <View style={styles.friendsSection}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 32, marginBottom: 8 }}>
                 <Text style={styles.friendsHeader}>Friends</Text>
                 <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/friend-requests')}>
-                  <Text style={styles.addBtnText}>+</Text>
+                  <Text style={styles.addBtnText}>  +  </Text>
                 </TouchableOpacity>
               </View>
               <TextInput
@@ -398,7 +401,20 @@ export default function ProfileScreen() {
                   data={filteredFriends}
                   keyExtractor={(item) => item.uid}
                   renderItem={({ item }) => renderUserItem(item)}
-                  ListEmptyComponent={<Text style={styles.emptyText}>No friends found</Text>}
+                  ListEmptyComponent={
+                    <View style={{ alignItems: 'center', paddingHorizontal: 20 }}>
+                      <RNImage
+                        source={require('../../assets/images/friends.png')}
+                        style={{ width: 220, height: 220, marginTop: 6, marginBottom: 6, resizeMode: 'contain' }}
+                      />
+                      <Text style={{ ...styles.emptyText, fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginBottom: 4 }}>
+                        No friends found.
+                      </Text>
+                      <Text style={{ ...styles.emptyText, textAlign: 'center' }}>
+                        To send or view requests, tap the + button!
+                      </Text>
+                    </View>
+                  }
                   style={{ marginTop: 8 }}
                   scrollEnabled={false}
                 />
@@ -424,34 +440,31 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     fontSize: 20,
-    marginBottom: 20,
+    marginBottom: 3,
     textAlign: "center",
   },
-  signOutButton: {
-    height: 50,
-    backgroundColor: "#000000",
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 24,
+  iconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+    marginBottom: 2,
   },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
+  iconButton: {
+    marginRight: 16,
+    padding: 4,
   },
   profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
   },
-  friendsSection: { width: '100%', marginTop: 24 },
+  friendsSection: { width: '100%', marginTop: 6 },
   friendsHeader: { fontSize: 20, fontWeight: 'bold', flex: 1 },
-  addBtn: { backgroundColor: '#2196F3', padding: 8, borderRadius: 4, marginLeft: 8 },
+  addBtn: { backgroundColor: '#003D7C', padding: 8, borderRadius: 20, marginLeft: 8 },
   addBtnText: { color: '#fff', fontWeight: 'bold' },
-  friendSearchInput: { borderWidth: 1, borderColor: '#ccc', borderRadius: 6, padding: 8, marginBottom: 8, marginTop: 8 },
+  friendSearchInput: { borderWidth: 1, borderColor: '#ccc', borderRadius: 90, padding: 12, marginBottom: 8, marginTop: 8 },
   userItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#eee' },
   avatar: { width: 36, height: 36, borderRadius: 18, marginRight: 12, backgroundColor: '#eee' },
   userText: { flex: 1 },
-  emptyText: { color: '#888', fontStyle: 'italic', textAlign: 'center', marginTop: 8 },
+  emptyText: { color: '#888', textAlign: 'center', marginTop: 8 },
 });

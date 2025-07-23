@@ -15,6 +15,7 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import LocationCard from '../components/LocationCard';
+import { auth } from '../../firebase';
 
 type LocationType = {
   latitude: number;
@@ -60,8 +61,30 @@ export default function HomeScreen() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedDestination, setSelectedDestination] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [savedLocations, setSavedLocations] = useState<string[]>([]); // store saved location names
+  const [loadingSave, setLoadingSave] = useState(false);
   const router = useRouter();
   const params = useLocalSearchParams();
+
+  // Fetch saved locations on mount
+  useEffect(() => {
+    const fetchSavedLocations = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+        const token = await user.getIdToken();
+        const res = await fetch('https://aroundnus.onrender.com/api/savedLocations/get', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        setSavedLocations(data.map((loc: { name: string }) => loc.name));
+      } catch (e) {
+        // Optionally handle error
+      }
+    };
+    fetchSavedLocations();
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -147,7 +170,44 @@ export default function HomeScreen() {
     setSelectedDestination(null);
   };
 
+  const handleSaveToggle = async (poiName: string) => {
+    setLoadingSave(true);
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error('Not logged in');
+      const token = await user.getIdToken();
+      if (savedLocations.includes(poiName)) {
+        // Unsave
+        const res = await fetch('https://aroundnus.onrender.com/api/savedLocations/delete', {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ location: { name: poiName } }),
+        });
+        if (res.ok) setSavedLocations((prev) => prev.filter((n) => n !== poiName));
+      } else {
+        // Save
+        const res = await fetch('https://aroundnus.onrender.com/api/savedLocations/add', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ location: { name: poiName } }),
+        });
+        if (res.ok) setSavedLocations((prev) => [...prev, poiName]);
+      }
+    } catch (e) {
+      // Optionally handle error
+    } finally {
+      setLoadingSave(false);
+    }
+  };
 
+  // Pass saved state to LocationCard
+  const isSelectedSaved = !!(selectedDestination && savedLocations.includes(selectedDestination));
 
   const isWeb = Platform.OS === "web";
 
@@ -233,7 +293,15 @@ export default function HomeScreen() {
 
       </View>
 
-      {selectedDestination && <LocationCard destination={selectedDestination} onClose={handleCloseCard} />}
+      {selectedDestination && (
+        <LocationCard
+          destination={selectedDestination}
+          onClose={handleCloseCard}
+          isSaved={isSelectedSaved}
+          onSaveToggle={() => handleSaveToggle(selectedDestination)}
+          loadingSave={loadingSave}
+        />
+      )}
     </View>
   );
 }
@@ -251,7 +319,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "#fff",
     padding: 12,
-    borderRadius: 12,
+    borderRadius: 90,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform, ActivityIndicator, Alert, Image } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -86,11 +86,16 @@ export default function DisplayNameScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <View style={styles.centeredContent}>
-            <Text style={styles.title}>Set Display Name</Text>
+            <Text style={styles.title}>Welcome! What's your name?</Text>
+            <Image
+              source={require('../assets/images/hello.png')}
+              style={styles.helloImage}
+              resizeMode="contain"
+            />
             <Text style={styles.description}>Choose a display name for your account. This will be visible to other users.</Text>
             <TextInput
               style={styles.input}
-              placeholder="Display Name"
+              placeholder="Display name"
               placeholderTextColor="#666666"
               value={displayName}
               onChangeText={setDisplayName}
@@ -100,7 +105,7 @@ export default function DisplayNameScreen() {
             />
             {error ? <Text style={styles.error}>{error}</Text> : null}
             <TouchableOpacity style={styles.continueButton} onPress={handleContinue} disabled={isLoading}>
-              {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.continueButtonText}>Go</Text>}
+              {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.continueButtonText}>Start</Text>}
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
@@ -125,9 +130,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '600',
-    color: '#000000',
+    color: '#003D7C',
+    marginTop: 36,
     marginBottom: 24,
     textAlign: 'center',
+  },
+  helloImage: {
+    width: 280,
+    height: 280,
+    alignSelf: 'center',
+    marginBottom: 12,
   },
   description: {
     fontSize: 16,
@@ -139,7 +151,7 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    borderRadius: 8,
+    borderRadius: 90,
     paddingHorizontal: 16,
     paddingVertical: 5,
     fontSize: 16,
@@ -149,12 +161,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   continueButton: {
-    backgroundColor: '#000000',
-    borderRadius: 8,
+    backgroundColor: '#003D7C',
+    borderRadius: 99,
     paddingVertical: 16,
     alignItems: 'center',
     marginBottom: 24,
-    width: 70,
+    width: "100%",
     alignSelf: 'center',
   },
   continueButtonText: {
