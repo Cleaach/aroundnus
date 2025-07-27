@@ -20,7 +20,7 @@ export default function ViewSharedLocationsModal() {
       }
       const token = await currentUser.getIdToken();
 
-      const response = await fetch(`https://aroundnus.onrender.com/api/shared-locations/get/${friendUid}`, {
+      const response = await fetch(`https://aroundnus.onrender.com/api/shared-locations/${friendUid}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -32,7 +32,7 @@ export default function ViewSharedLocationsModal() {
         throw new Error(data.error || 'Failed to fetch shared locations');
       }
 
-      setLocations(data.sharedLocation || []);
+      setLocations(data || []);
     } catch (error) {
       console.error(error);
       // Optionally show an alert to the user
