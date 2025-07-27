@@ -1,8 +1,5 @@
 const { admin } = require('../config/firebase');
-const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
-const upload = multer({ storage: multer.memoryStorage() });
-
 
 const getProfileData = async (req, res) => {
   const { uid } = req.user;

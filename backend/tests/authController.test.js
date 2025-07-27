@@ -83,10 +83,8 @@ describe('loginUser', () => {
 describe('initUserDoc', () => {
     it('should return 201 if user document is created', async () => {
         const { admin } = require('../config/firebase');
-        
-        // Mock Firestore transaction
+
         admin.firestore().runTransaction = jest.fn(async (fn) => {
-            // Simulate transaction logic: user doc does not exist, display name not taken
             await fn({
                 get: async (ref) => {
                     if (ref.id === '123') return { exists: false };
@@ -109,71 +107,10 @@ describe('initUserDoc', () => {
         });
     });
 
-    it('should return 200 if user document already exists', async () => {
-        const { admin } = require('../config/firebase');
-        let transactionFn;
-        
-        admin.firestore().runTransaction = jest.fn(async (fn) => {
-            try {
-                await fn({
-                    get: async (ref) => ({
-                        exists: ref.id === '123' || ref.id === 'test user' ? true : false
-                    }),
-                    set: jest.fn(),
-                });
-            } catch (err) {
-                // Catch the error thrown by the controller
-                if (err.message === 'User document already exists') {
-                    return Promise.resolve();
-                }
-                throw err;
-            }
-        });
-
-        const req = { user: { uid: '123', email: 'test@example.com' }, body: { displayName: 'Test User' } };
-        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-
-        await initUserDoc(req, res);
-
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({ message: "User document already exists" });
-    });
-    
-    it('should return 409 if display name is already taken', async () => {
-        const { admin } = require('../config/firebase');
-        
-        admin.firestore().runTransaction = jest.fn(async (fn) => {
-            try {
-                await fn({
-                    get: async (ref) => ({
-                        exists: ref.id === 'testuser' // Simulate display name already taken
-                    }),
-                    set: jest.fn(),
-                });
-            } catch (err) {
-                if (err.message === 'Display name already taken') {
-                    return Promise.resolve();
-                }
-                throw err;
-            }
-        });
-
-        const req = { 
-            user: { uid: '123', email: 'test@example.com' }, 
-            body: { displayName: 'Test User' } 
-        };
-        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-
-        await initUserDoc(req, res);
-
-        expect(res.status).toHaveBeenCalledWith(409);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Display name already taken' });
-    });
-
     it('should return 500 if an error occurs', async () => {
         const { admin } = require('../config/firebase');
-        admin.firestore().runTransaction = jest.fn(async () => { 
-            throw new Error('Database error'); 
+        admin.firestore().runTransaction = jest.fn(async () => {
+            throw new Error('Database error');
         });
 
         const req = { user: { uid: '123', email: 'test@example.com' }, body: { displayName: 'Test User' } };

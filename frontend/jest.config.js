@@ -1,11 +1,17 @@
 module.exports = {
-  preset: 'react-native',
-  transform: {
-    '^.+\\.[jt]sx?$': 'babel-jest',
+  testEnvironment: 'node',
+  testMatch: [
+    '<rootDir>/tests/unit/**/*.test.js',
+    '<rootDir>/tests/integration/**/*.test.js',
+  ],
+  moduleNameMapper: {
+    '\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/tests/mocks/fileMock.js',
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
-  transformIgnorePatterns: [
-    "node_modules/(?!(react-native|@react-native|@react-navigation|expo(nent)?|@expo(nent)?|@unimodules|unimodules|sentry-expo|native-base|react-native-.*|@react-native-.*)/)"
+  setupFilesAfterEnv: ['<rootDir>/tests/jest.setup.js'],
+  transform: {},
+  transformIgnorePatterns: [],
+  collectCoverageFrom: [
+    'tests/**/*.js',
+    '!**/node_modules/**',
   ],
 };
