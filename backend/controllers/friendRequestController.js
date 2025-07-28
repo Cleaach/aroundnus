@@ -1,6 +1,5 @@
 const { admin } = require('../config/firebase');
 
-// Send a friend request by targetUid
 const sendFriendRequest = async (req, res) => {
     const { uid } = req.user;
     const { targetUid } = req.body;
@@ -33,7 +32,6 @@ const sendFriendRequest = async (req, res) => {
     }
 };
 
-// Get received friend requests
 const getReceivedFriendRequests = async (req, res) => {
     const { uid } = req.user;
     try {
@@ -46,7 +44,6 @@ const getReceivedFriendRequests = async (req, res) => {
     }
 };
 
-// Get sent friend requests
 const getSentFriendRequests = async (req, res) => {
     const { uid } = req.user;
     try {
@@ -59,7 +56,6 @@ const getSentFriendRequests = async (req, res) => {
     }
 };
 
-// Approve a friend request
 const approveFriendRequest = async (req, res) => {
     const { uid } = req.user;
     const { requesterUid } = req.body;
@@ -88,7 +84,6 @@ const approveFriendRequest = async (req, res) => {
     }
 };
 
-// Reject a friend request
 const rejectFriendRequest = async (req, res) => {
     const { uid } = req.user;
     const { requesterUid } = req.body;
@@ -110,7 +105,6 @@ const rejectFriendRequest = async (req, res) => {
     }
 };
 
-// Search users by displayName (case-insensitive, partial match)
 const searchUsersByDisplayName = async (req, res) => {
     const { displayName } = req.query;
     if (!displayName || typeof displayName !== 'string') {
@@ -118,7 +112,6 @@ const searchUsersByDisplayName = async (req, res) => {
     }
     try {
         const usersRef = admin.firestore().collection('users');
-        // Firestore does not support case-insensitive or partial match natively, so we fetch and filter in memory
         const snapshot = await usersRef.get();
         const results = [];
         snapshot.forEach(doc => {
@@ -133,7 +126,6 @@ const searchUsersByDisplayName = async (req, res) => {
     }
 };
 
-// Remove a friend
 const removeFriend = async (req, res) => {
     const { uid } = req.user;
     const { friendUid } = req.body;
@@ -143,7 +135,6 @@ const removeFriend = async (req, res) => {
     try {
         const userRef = admin.firestore().collection('users').doc(uid);
         const friendRef = admin.firestore().collection('users').doc(friendUid);
-        // Remove each other from friends arrays
         await userRef.update({
             friends: admin.firestore.FieldValue.arrayRemove(friendUid)
         });

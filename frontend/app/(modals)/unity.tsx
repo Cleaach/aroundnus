@@ -27,16 +27,14 @@ const UnityScreen = () => {
     );
     setIsUnityVisible(false);
     console.log("THIS SHIT DONE");
-    setUnityKey(prev => prev + 1); // Force remount next time
+    setUnityKey(prev => prev + 1); 
   };
 
   const handleBack = () => {
     console.log('Terminating Unity and navigating back...');
     
-    // Terminate Unity first
     terminateUnity();
     
-    // Wait longer for Unity to fully terminate
     setTimeout(() => {
       router.back();
     }, 500);
@@ -55,7 +53,6 @@ const UnityScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Custom back button */}
       <TouchableOpacity 
         style={{ 
           position: 'absolute', 

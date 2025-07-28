@@ -6,7 +6,6 @@ import { Stack } from 'expo-router';
 
 const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?name=User&background=random';
 
-// Helper to fetch user info by UID
 async function fetchUserInfo(uid: string, token: string) {
   const res = await fetch(`https://aroundnus.onrender.com/api/profile/get-profile-data-by-uid?uid=${uid}`, {
     headers: { 'Authorization': `Bearer ${token}` },
@@ -43,7 +42,6 @@ export default function FriendRequestsScreen() {
       ]);
       const receivedData = await receivedRes.json();
       const sentData = await sentRes.json();
-      // Fetch display names and profile pictures for each UID
       const receivedUids: string[] = receivedData.received || [];
       const sentUids: string[] = sentData.sent || [];
       const [receivedInfos, sentInfos] = await Promise.all([
@@ -66,7 +64,6 @@ export default function FriendRequestsScreen() {
     } else {
       setSearchResults([]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchName]);
 
   useEffect(() => { fetchRequests(); }, []);
@@ -88,12 +85,10 @@ export default function FriendRequestsScreen() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to search');
-      // For each result, fetch profile picture if not present, and filter out self
       const usersWithPics = await Promise.all(
         (data.users || []).map(async (userObj: any) => {
-          if (userObj.uid === user.uid) return null; // filter out self
+          if (userObj.uid === user.uid) return null;
           if (userObj.profilePicture) return userObj;
-          // fallback: fetch full info
           return await fetchUserInfo(userObj.uid, token);
         })
       );
@@ -257,18 +252,90 @@ export default function FriendRequestsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
-  section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 8 },
-  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 6, padding: 8, marginBottom: 8 },
-  userItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#eee' },
-  avatar: { width: 36, height: 36, borderRadius: 18, marginRight: 12, backgroundColor: '#eee' },
-  userText: { flex: 1 },
-  sendBtn: { backgroundColor: '#2196F3', padding: 8, borderRadius: 4, marginLeft: 8 },
-  requestActions: { flexDirection: 'row' },
-  approveBtn: { backgroundColor: '#4CAF50', padding: 8, borderRadius: 4, marginRight: 8 },
-  rejectBtn: { backgroundColor: '#F44336', padding: 8, borderRadius: 4 },
-  btnText: { color: '#fff', fontWeight: 'bold' },
-  emptyText: { color: '#888', fontStyle: 'italic', textAlign: 'center', marginTop: 8 },
+  container: { 
+    flex: 1, 
+    padding: 16, 
+    backgroundColor: '#fff' 
+  },
+
+  title: { 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    marginBottom: 16, 
+    textAlign: 'center' 
+  },
+
+  section: { 
+    marginBottom: 24 
+  },
+
+  sectionTitle: { 
+    fontSize: 18, 
+    fontWeight: 'bold', 
+    marginBottom: 8 
+  },
+
+  input: { 
+    borderWidth: 1, 
+    borderColor: '#ccc', 
+    borderRadius: 6, 
+    padding: 8, 
+    marginBottom: 8 
+  },
+
+  userItem: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    paddingVertical: 6, 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#eee' 
+  },
+
+  avatar: { 
+    width: 36, 
+    height: 36, 
+    borderRadius: 18, 
+    marginRight: 12, 
+    backgroundColor: '#eee' 
+  },
+
+  userText: { 
+    flex: 1 
+  },
+
+  sendBtn: { 
+    backgroundColor: '#2196F3', 
+    padding: 8, 
+    borderRadius: 4, 
+    marginLeft: 8 
+  },
+
+  requestActions: { 
+    flexDirection: 'row' 
+  },
+
+  approveBtn: { 
+    backgroundColor: '#4CAF50', 
+    padding: 8, 
+    borderRadius: 4, 
+    marginRight: 8 
+  },
+
+  rejectBtn: { 
+    backgroundColor: '#F44336', 
+    padding: 8, 
+    borderRadius: 4 
+  },
+
+  btnText: { 
+    color: '#fff', 
+    fontWeight: 'bold' 
+  },
+
+  emptyText: { 
+    color: '#888', 
+    fontStyle: 'italic', 
+    textAlign: 'center', 
+    marginTop: 8 
+  },
 }); 

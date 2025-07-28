@@ -1,8 +1,8 @@
 const { admin } = require('../config/firebase');
 
-// Share a location with a specific friend
+
 const shareLocation = async (req, res) => {
-    const { uid } = req.user; // The user sharing the location
+    const { uid } = req.user; 
     const { friendUid, locationName } = req.body;
 
     if (!friendUid || !locationName) {
@@ -12,7 +12,6 @@ const shareLocation = async (req, res) => {
     try {
         const userRef = admin.firestore().collection('users').doc(uid);
 
-        // Use dot notation to update the map field
         const updatePath = `sharedLocations.${friendUid}`;
         await userRef.update({
             [updatePath]: admin.firestore.FieldValue.arrayUnion({ locationId: new Date().getTime().toString(), locationName })
@@ -25,17 +24,15 @@ const shareLocation = async (req, res) => {
     }
 };
 
-// Get locations a specific friend has shared with the current user
 const getSharedLocations = async (req, res) => {
-    const { uid } = req.user; // The user requesting the locations
-    const { friendUid } = req.params; // The friend whose shared locations we want to see
+    const { uid } = req.user; 
+    const { friendUid } = req.params; 
 
     if (!friendUid) {
         return res.status(400).json({ error: 'Missing friendUid parameter' });
     }
 
     try {
-        // Fetch the friend's document to find what they have shared with the current user
         const friendDoc = await admin.firestore().collection('users').doc(friendUid).get();
         if (!friendDoc.exists) {
             return res.status(404).json({ error: 'Friend not found' });
@@ -44,7 +41,6 @@ const getSharedLocations = async (req, res) => {
         const friendData = friendDoc.data();
         const sharedLocationsMap = friendData.sharedLocations || {};
 
-        // Get the array of locations the friend has shared with the current user
         const locationsSharedWithCurrentUser = sharedLocationsMap[uid] || [];
 
         res.status(200).json(locationsSharedWithCurrentUser);
@@ -54,9 +50,8 @@ const getSharedLocations = async (req, res) => {
     }
 };
 
-// Stop sharing a location with a specific friend
 const removeSharedLocation = async (req, res) => {
-    const { uid } = req.user; // The user who is sharing
+    const { uid } = req.user;
     const { friendUid, locationName } = req.body;
 
     if (!friendUid || !locationName) {

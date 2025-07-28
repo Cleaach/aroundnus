@@ -31,7 +31,6 @@ const updateProfilePicture = async (req, res) => {
     const userRef = admin.firestore().collection('users').doc(uid);
     const bucket = admin.storage().bucket();
 
-    // Delete old profile picture if exists
     const userDoc = await userRef.get();
     const oldProfilePicture = userDoc.data().profilePicture;
     if (oldProfilePicture) {
@@ -44,7 +43,6 @@ const updateProfilePicture = async (req, res) => {
       await bucket.file(oldProfilePicturePath).delete().catch(() => { });
     }
 
-    // Upload new profile picture
     const newFileName = `profilePictures/${uid}_${Date.now()}.jpg`;
     const file = bucket.file(newFileName);
     const uuid = uuidv4();
@@ -58,7 +56,6 @@ const updateProfilePicture = async (req, res) => {
       },
     });
 
-    // Construct the download URL
     const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(newFileName)}?alt=media&token=${uuid}`;
 
     await userRef.update({ profilePicture: downloadUrl });
@@ -86,15 +83,11 @@ const updateDisplayName = async (req, res) => {
       const oldDisplayName = userDoc.data().displayName || '';
       const oldDisplayNameIndexRef = db.collection('displayNameIndex').doc(oldDisplayName.trim().toLowerCase());
       if (displayName.trim().toLowerCase() !== oldDisplayName.trim().toLowerCase()) {
-        // Check if new display name is taken
         const newDisplayNameDoc = await transaction.get(newDisplayNameIndexRef);
         if (newDisplayNameDoc.exists) throw new Error('Display name already taken');
-        // Remove old index if it exists
         if (oldDisplayName) transaction.delete(oldDisplayNameIndexRef);
-        // Set new index
         transaction.set(newDisplayNameIndexRef, { uid });
       }
-      // Update user document
       transaction.update(userRef, { displayName: displayName.trim() });
     });
     res.status(200).json({ message: 'Display name updated', displayName: displayName.trim() });
@@ -109,7 +102,6 @@ const updateDisplayName = async (req, res) => {
   }
 };
 
-// Get profile data by UID (for friend requests display)
 const getProfileDataByUid = async (req, res) => {
   const { uid } = req.query;
   if (!uid) return res.status(400).json({ error: 'Missing uid' });

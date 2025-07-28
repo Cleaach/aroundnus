@@ -10,7 +10,6 @@ import {
   Alert,
   SafeAreaView,
   RefreshControl,
-  Image,
 } from 'react-native';
 import { auth } from '../../firebase';
 import { FontAwesome } from '@expo/vector-icons';
@@ -80,7 +79,6 @@ export default function SavedLocationsScreen() {
             const user = auth.currentUser;
             if (!user) throw new Error('Not logged in');
             const token = await user.getIdToken();
-            // Only send the id for deletion
             const res = await fetch('https://aroundnus.onrender.com/api/savedLocations/delete', {
               method: 'DELETE',
               headers: {
@@ -103,7 +101,9 @@ export default function SavedLocationsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      
+      <View style={styles.header}>
+        <Text style={styles.title}>Saved Locations</Text>
+      </View>
       <View style={styles.searchRow}>
         <TextInput
           style={styles.searchInput}
@@ -131,24 +131,7 @@ export default function SavedLocationsScreen() {
           </TouchableOpacity>
         )}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-        ListEmptyComponent={
-          !loading ? (
-            <View style={{ paddingHorizontal: 50, alignItems: 'center' }}>
-              <Image
-                source={require('../../assets/images/corridor.png')}
-                style={{ width: 280, height: 280, marginTop: 35, marginBottom: 6, resizeMode: 'contain' }}
-              />
-              <Text style={{ ...styles.empty, fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginBottom: 0 }}>
-                No saved locations found.
-              </Text>
-              <Text style={{ ...styles.empty, textAlign: 'center' }}>
-                To bookmark a place, tap on the Save button
-                under the location's card in the
-                main Navigation tab!
-              </Text>
-            </View>
-          ) : null
-        }
+        ListEmptyComponent={!loading ? <Text style={styles.empty}>No saved locations.</Text> : null}
       />
     </SafeAreaView>
   );
@@ -172,13 +155,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 16,
     marginBottom: 8,
-    marginTop: 64,
   },
   searchInput: {
     flex: 1,
     backgroundColor: '#f0f0f0',
-    borderRadius: 90,
-    padding: 15,
+    borderRadius: 8,
+    padding: 10,
   },
   addRow: {
     flexDirection: 'row',

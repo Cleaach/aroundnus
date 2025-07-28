@@ -8,12 +8,9 @@ import { v4 as uuidv4 } from 'uuid';
 interface LocationCardProps {
   destination: string;
   onClose: () => void;
-  isSaved?: boolean;
-  onSaveToggle?: () => void;
-  loadingSave?: boolean;
 }
 
-const LocationCard: React.FC<LocationCardProps> = ({ destination, onClose, isSaved = false, onSaveToggle, loadingSave = false }) => {
+const LocationCard: React.FC<LocationCardProps> = ({ destination, onClose }) => {
   const slideAnim = useRef(new Animated.Value(300)).current;
   const router = useRouter();
 
@@ -103,13 +100,9 @@ const LocationCard: React.FC<LocationCardProps> = ({ destination, onClose, isSav
           <FontAwesome name="location-arrow" size={20} color="#fff" />
           <Text style={styles.navigateButtonText}>Navigate</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.saveButton} onPress={onSaveToggle} disabled={loadingSave}>
-          {loadingSave ? (
-            <FontAwesome name="spinner" size={20} color="#0052A8" />
-          ) : (
-            <FontAwesome name={isSaved ? "bookmark" : "bookmark-o"} size={20} color="#0052A8" />
-          )}
-          <Text style={styles.saveButtonText}>{isSaved ? 'Unsave' : 'Save'}</Text>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <FontAwesome name="bookmark" size={20} color="#0052A8" />
+          <Text style={styles.saveButtonText}>Save</Text>
         </TouchableOpacity>
       </View>
     </Animated.View>
@@ -181,7 +174,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   saveButtonText: {
-    color: '#003D7C',
+    color: '#0052A8',
     fontWeight: 'bold',
     fontSize: 14,
   },

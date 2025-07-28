@@ -35,7 +35,6 @@ export default function ViewSharedLocationsModal() {
       setLocations(data || []);
     } catch (error) {
       console.error(error);
-      // Optionally show an alert to the user
     } finally {
       setLoading(false);
       setRefreshing(false);

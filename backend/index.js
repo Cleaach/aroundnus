@@ -11,19 +11,17 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors({
-  origin: '*', // Allow all origins for testing, restrict in production)
+  origin: '*',
   allowedHeaders: ['Content-Type', 'Authorization'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 
-// routes
 app.use('/api/savedLocations', savedLocationsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/friend-requests', friendRequestRoutes);
 app.use('/api/shared-locations', sharedLocationRoutes);
 
-// Catch-all 404 handler for unknown routes
 app.use((req, res) => {
   res.status(404).json({ error: 'Not Found', path: req.originalUrl });
 });

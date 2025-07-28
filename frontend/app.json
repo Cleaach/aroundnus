@@ -18,7 +18,6 @@
       "bundleIdentifier": "com.anonymous.ARoundNUS"
     },
     "android": {
-      "icon": "./assets/images/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"

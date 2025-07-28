@@ -19,11 +19,6 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
-SplashScreen.setOptions({
-  duration: 400,
-  fade: true,
-})
-
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -56,13 +51,10 @@ export default function RootLayout() {
       const inDisplayNamePage = segments[0] === 'displayname';
       
       if (!user && (inAuthGroup || inModalGroup)) {
-        // Redirect to sign in if not signed in and trying to access protected routes
         router.replace('/signin' as any);
       } else if (user && inSigninPage) {
-        // Redirect to main app if signed in and on signin page
         router.replace('/(tabs)');
       }
-      // Do NOT redirect away from /displayname if signed in
     }
   }, [user, segments, isAuthLoading]);
 

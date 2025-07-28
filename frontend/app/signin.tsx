@@ -14,7 +14,6 @@ import {
   Easing,
   KeyboardAvoidingView,
   Platform,
-  Image,
 } from "react-native";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
 import { auth } from "../firebase";
@@ -89,17 +88,13 @@ export default function SignInScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <View style={styles.centeredContent}>
-            <Text style={styles.title}>Welcome to ARoundNUS</Text>
-            <Image
-              source={require('../assets/images/welcome.png')}
-              style={styles.welcomeImage}
-              resizeMode="contain"
-            />
-            <Text style={styles.description}>Enter your email to sign in or sign up.</Text>
+            <Text style={styles.title}>Welcome</Text>
+            <Text style={styles.description}>Enter your email and password to sign in to ARoundNUS.</Text>
+            {/* Email input with arrow button */}
             <View style={styles.emailRow}>
               <TextInput
                 style={[styles.emailInput, { flex: 1, marginBottom: 0 }]}
-                placeholder="example@gmail.com"
+                placeholder="email@domain.com"
                 placeholderTextColor="#666666"
                 value={email}
                 onChangeText={setEmail}
@@ -120,6 +115,7 @@ export default function SignInScreen() {
                 </TouchableOpacity>
               )}
             </View>
+            {/* Password input and continue button only show after arrow is pressed, with animation */}
             {showPasswordInput && (
               <Animated.View
                 style={{
@@ -184,16 +180,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "600",
-    color: "#003D7C",
+    color: "#000000",
     marginTop: 60,
     marginBottom: 24,
     textAlign: "center",
-  },
-  welcomeImage: {
-    width: 300,
-    height: 300,
-    alignSelf: 'center',
-    marginBottom: 16,
   },
   formSection: {
     width: '100%',
@@ -216,7 +206,7 @@ const styles = StyleSheet.create({
   emailInput: {
     borderWidth: 1,
     borderColor: "#E0E0E0",
-    borderRadius: 90,
+    borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 5,
     fontSize: 16,
@@ -225,8 +215,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   continueButton: {
-    backgroundColor: "#003D7C",
-    borderRadius: 90,
+    backgroundColor: "#000000",
+    borderRadius: 8,
     paddingVertical: 16,
     alignItems: "center",
     marginBottom: 24,
@@ -264,8 +254,8 @@ const styles = StyleSheet.create({
   },
   arrowButton: {
     marginLeft: 8,
-    backgroundColor: '#003D7C',
-    borderRadius: 90,
+    backgroundColor: '#000',
+    borderRadius: 8,
     width: 48,
     height: 48,
     justifyContent: 'center',

@@ -25,7 +25,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="saved-locations"
         options={{
-          title: "Saved",
+          title: "Saved Locations",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'bookmark' : 'bookmark-outline'} color={color} />
           ),
@@ -34,7 +34,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "You",
+          title: "Profile",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
           ),
